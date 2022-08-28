@@ -1,0 +1,26 @@
+@import 'src/styles';
+
+:host {
+  display: block;
+}
+
+#header {
+  position: sticky;
+  height: calc(#{$header-height} - 1px);
+  line-height: calc(#{$header-height} - 1px);
+  text-align: center;
+  border-bottom: 1px gray solid;
+
+  button {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+  }
+
+  .title {
+    text-transform: uppercase;
+    margin: 0;
+    padding: 0;
+    line-height: 60px;
+  }
+}
