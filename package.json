@@ -1,0 +1,58 @@
+{
+  "name": "webassembly-master",
+  "version": "0.0.0",
+  "scripts": {
+    "prepare": "husky install",
+    "start": "ng serve --live-reload false",
+    "build:test": "ng build",
+    "build:prod": "ng build --prod",
+    "lint": "npx eslint src/**/*.{js,ts} --fix",
+    "prettier": "npx prettier src/**/*.{js,ts,html,css,scss} --write",
+    "postinstall": "husky install"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~13.2.3",
+    "@angular/cdk": "^13.2.3",
+    "@angular/common": "~13.2.3",
+    "@angular/core": "~13.2.3",
+    "@angular/forms": "~13.2.3",
+    "@angular/google-maps": "^13.2.3",
+    "@angular/material": "^13.2.3",
+    "@angular/platform-browser": "~13.2.3",
+    "@angular/platform-browser-dynamic": "~13.2.3",
+    "@angular/router": "~13.2.3",
+    "rxjs": "~6.5.1",
+    "rxjs-compat": "^6.4.0",
+    "tslib": "^2.0.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^13.2.4",
+    "@angular-eslint/builder": "13.1.0",
+    "@angular-eslint/eslint-plugin": "13.1.0",
+    "@angular-eslint/eslint-plugin-template": "13.1.0",
+    "@angular-eslint/schematics": "13.1.0",
+    "@angular-eslint/template-parser": "13.1.0",
+    "@angular/cli": "^13.2.4",
+    "@angular/compiler": "~13.2.4",
+    "@angular/compiler-cli": "~13.2.4",
+    "@angular/language-service": "~13.2.3",
+    "@types/node": "^12.11.1",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "codelyzer": "^6.0.0",
+    "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "^39.3.6",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "ts-node": "~8.3.0",
+    "typescript": "~4.5.5"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --fix",
+    "*.{js,ts,css,scss,html}": "prettier --write"
+  }
+}
