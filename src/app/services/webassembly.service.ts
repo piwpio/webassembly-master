@@ -8,7 +8,7 @@ import { mergeMap } from 'rxjs/operators';
 export class WebassemblyService {
   constructor(private readonly http: HttpClient) {}
 
-  initWasm(url: string, imports?: WebAssembly.Imports): Promise<WebAssembly.WebAssemblyInstantiatedSource> {
+  initWasm(url: string, imports: WebAssembly.Imports = {}): Promise<WebAssembly.WebAssemblyInstantiatedSource> {
     return this.http
       .get(url, { responseType: 'arraybuffer' })
       .pipe(mergeMap((bytes) => WebAssembly.instantiate(bytes, imports)))
