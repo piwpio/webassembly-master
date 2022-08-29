@@ -10,6 +10,7 @@ mat-drawer-container {
   width: 100%;
   height: calc(100% - #{$header-height});
   padding: 1em;
+  box-sizing: border-box;
 }
 
 router-outlet {

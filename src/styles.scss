@@ -8,3 +8,31 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+.form__container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+
+  form > * {
+    &:not(:first-child) {
+      margin-left: 10px;
+    }
+  }
+}
+
+.loading-container {
+  width: 100%;
+  mat-spinner {
+    margin: 0 auto;
+  }
+}
+
+.results-container {
+  width: 100%;
+
+  table {
+    width: 100%;
+  }
+}

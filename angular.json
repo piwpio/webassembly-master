@@ -44,7 +44,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -61,6 +60,15 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "test": {
+              "optimization": false,
+              "sourceMap": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false,
+              "aot": false
             }
           }
         },
@@ -72,6 +80,9 @@
           "configurations": {
             "production": {
               "browserTarget": "webassembly-master:build:production"
+            },
+            "test": {
+              "browserTarget": "webassembly-master:build:test"
             }
           }
         },

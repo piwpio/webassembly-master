@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "prepare": "husky install",
-    "start": "ng serve --live-reload false",
+    "start": "ng serve --live-reload=false --configuration test",
     "build:test": "ng build",
     "build:prod": "ng build --prod",
     "lint": "npx eslint src/**/*.{js,ts} --fix",

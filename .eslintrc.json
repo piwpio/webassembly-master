@@ -56,7 +56,7 @@
         "max-len": [
           "off",
           {
-            "code": 120
+            "code": 90
           }
         ],
         "no-underscore-dangle": "off"

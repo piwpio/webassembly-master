@@ -26,6 +26,9 @@
       ],
       "@features/*": [
         "app/features/*",
+      ],
+      "@scripts/*": [
+        "assets/scripts/*",
       ]
     }
   },
