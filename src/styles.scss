@@ -38,15 +38,41 @@ body {
 
   table {
     width: 100%;
-
-    .cell--slowest {
-      color: red;
-      font-weight: bold;
+    .cell {
+      &--slowest {
+        color: red;
+        font-weight: bold;
+      }
+      &--fastest {
+        color: darkgreen;
+        font-weight: bold;
+      }
     }
+  }
 
-    .cell--fastest {
-      color: darkgreen;
-      font-weight: bold;
+  .charts__container {
+    padding: 40px 0;
+
+    .chart__container {
+      &--card {
+        width: 100%;
+        height: 160px;
+      }
+      &--bar {
+        width: 100%;
+        height: 320px;
+      }
+    }
+    @media only screen and (min-width: 1460px) {
+      .chart__container {
+        &--card,
+        &--bar {
+          width: 50%;
+        }
+        &--card {
+          float: right;
+        }
+      }
     }
   }
 }

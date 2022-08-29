@@ -37,21 +37,24 @@
     <tr mat-row *matRowDef="let row; columns: tableDisplayedColumns"></tr>
   </table>
 
-  <div style="width: 100%; height: 160px">
-    <ngx-charts-number-card
-      *ngFor="let data of ['js', 'wasm']"
-      [results]="chartBlockResults[data]"
-      [cardColor]="'#000'"
-    ></ngx-charts-number-card>
-  </div>
+  <div class="charts__container">
+    <div class="chart__container--card">
+      <ngx-charts-number-card
+        *ngFor="let data of ['js', 'wasm']"
+        [results]="chartBlockResults[data]"
+        [cardColor]="'#000'"
+      ></ngx-charts-number-card>
+    </div>
 
-  <div style="width: 100%; height: 160px">
-    <ngx-charts-bar-vertical-2d
-      [results]="chartBarsResults"
-      [legend]="true"
-      [yAxisLabel]="'time [ms]'"
-      [showXAxisLabel]="true"
-      [showYAxisLabel]="true"
-    ></ngx-charts-bar-vertical-2d>
+    <div class="chart__container--bar">
+      <ngx-charts-bar-vertical-2d
+        [results]="chartBarsResults"
+        [legend]="true"
+        [yAxisLabel]="'time [ms]'"
+        [showYAxisLabel]="true"
+        [xAxis]="true"
+        [yAxis]="true"
+      ></ngx-charts-bar-vertical-2d>
+    </div>
   </div>
 </div>
