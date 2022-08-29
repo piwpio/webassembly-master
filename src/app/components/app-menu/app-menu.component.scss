@@ -1,0 +1,34 @@
+@import '../../../styles';
+
+:host {
+  display: block;
+  width: 300px;
+}
+
+.menu__top {
+  position: relative;
+  height: calc(#{$header-height} - 1px);
+  line-height: calc(#{$header-height} - 1px);
+  border-bottom: 1px gray solid;
+
+  button {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+  }
+}
+
+.menu__routes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  button {
+    width: 100%;
+    height: 40px;
+    text-align: left;
+    border-bottom: 1px solid lightgray;
+    box-shadow: none;
+    border-radius: 0;
+  }
+}

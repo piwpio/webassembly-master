@@ -19,10 +19,13 @@
     ],
     "paths": {
       "@services/*": [
-        "app/shared/services/*",
+        "app/services/*",
       ],
-      "@constants": [
-        "constants.ts",
+      "@components/*": [
+        "app/components/*",
+      ],
+      "@features/*": [
+        "app/features/*",
       ]
     }
   },

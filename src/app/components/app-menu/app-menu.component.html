@@ -1,0 +1,10 @@
+<div class="menu__top">
+  <button mat-icon-button (click)="onBackClick()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+</div>
+<ul class="menu__routes-list">
+  <li *ngFor="let route of routes">
+    <button mat-flat-button (click)="navigateTo(route.url)">{{ route.label }}</button>
+  </li>
+</ul>

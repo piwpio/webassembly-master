@@ -5,8 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { AppHeaderModule } from './app-header/app-header.module';
-import { AppMenuModule } from './app-menu/app-menu.module';
+import { AppHeaderModule } from '@components/app-header/app-header.module';
+import { AppMenuModule } from '@components/app-menu/app-menu.module';
 
 @NgModule({
   declarations: [AppComponent],

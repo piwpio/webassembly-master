@@ -1,7 +1,7 @@
 <mat-drawer-container class="example-container" hasBackdrop="true" autosize>
   <app-header (menuClick)="drawer.toggle()"></app-header>
   <mat-drawer #drawer class="example-sidenav" mode="over">
-    <app-menu (backClick)="drawer.toggle()"></app-menu>
+    <app-menu [drawer]="drawer" (backClick)="drawer.toggle()"></app-menu>
   </mat-drawer>
   <div id="view__container">
     <router-outlet></router-outlet>
