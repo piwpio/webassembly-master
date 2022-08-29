@@ -4,8 +4,9 @@ import { Observable, Subject } from 'rxjs';
 import { fibonacci as fibonacciJS } from '@scripts/fibonacci/fibonacci';
 import { Fib, FibResult, FibResults, FibTests } from '@features/fibonacci/fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { isFastestTime, isSlowestTime } from '@services/utils';
+import { getAverage, getFastest, getMedian, getSlowest, isFastestTime, isSlowestTime } from '@services/utils';
 import { takeUntil } from 'rxjs/operators';
+import { ChartBarsData, ChartCardData } from '@models/charts.model';
 
 @Component({
   selector: 'fibonacci',
@@ -18,13 +19,11 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   isRunning = false;
   tableDisplayedColumns: string[] = ['testNo', 'js', 'wasm'];
   tablePreparedResults: { testNo: number; js: FibResult | '-'; wasm: FibResult | '-' }[] = null;
+  chartBlockResults: { [k in 'js' | 'wasm']: ChartCardData[] } = null;
+  chartBarsResults: ChartBarsData[] = null;
 
   private testSuites: FibTests = {};
-  private allResults: {
-    all: FibResult[];
-    allJs: FibResult[];
-    allWasm: FibResult[];
-  } = null;
+  private allResults: { [k in 'combined' | 'js' | 'wasm']: FibResult[] } = null;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -82,9 +81,9 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   getRowClass(results: FibResults): 'cell--slowest' | 'cell--fastest' | '' {
-    if (isFastestTime(+results, this.allResults.all)) {
+    if (isFastestTime(+results, this.allResults.combined)) {
       return 'cell--fastest';
-    } else if (isSlowestTime(+results, this.allResults.all)) {
+    } else if (isSlowestTime(+results, this.allResults.combined)) {
       return 'cell--slowest';
     } else {
       return '';
@@ -101,10 +100,86 @@ export class FibonacciComponent implements OnInit, OnDestroy {
       });
     }
 
+    this.chartBlockResults = {
+      js: [
+        { name: 'Best JavaScript', value: getFastest(rawResults.js), extra: { code: 'js' } },
+        { name: 'Worst JavaScript', value: getSlowest(rawResults.js), extra: { code: 'js' } },
+        { name: 'Average JavaScript', value: getAverage(rawResults.js), extra: { code: 'js' } },
+        { name: 'Median JavaScript', value: getMedian(rawResults.js), extra: { code: 'js' } },
+      ],
+      wasm: [
+        { name: 'Best WebAssembly', value: getFastest(rawResults.wasm), extra: { code: 'wasm' } },
+        { name: 'Worst WebAssembly', value: getSlowest(rawResults.wasm), extra: { code: 'wasm' } },
+        { name: 'Average WebAssembly', value: getAverage(rawResults.wasm), extra: { code: 'wasm' } },
+        { name: 'Median WebAssembly', value: getMedian(rawResults.wasm), extra: { code: 'wasm' } },
+      ],
+    };
+    this.chartBarsResults = [
+      {
+        name: 'Best',
+        series: [
+          {
+            name: 'JavaScript',
+            value: this.chartBlockResults.js[0].value,
+            extra: this.chartBlockResults.js[0].extra,
+          },
+          {
+            name: 'WebAssembly',
+            value: this.chartBlockResults.wasm[0].value,
+            extra: this.chartBlockResults.wasm[0].extra,
+          },
+        ],
+      },
+      {
+        name: 'Worst',
+        series: [
+          {
+            name: 'JavaScript',
+            value: this.chartBlockResults.js[1].value,
+            extra: this.chartBlockResults.js[1].extra,
+          },
+          {
+            name: 'WebAssembly',
+            value: this.chartBlockResults.wasm[1].value,
+            extra: this.chartBlockResults.wasm[1].extra,
+          },
+        ],
+      },
+      {
+        name: 'Average',
+        series: [
+          {
+            name: 'JavaScript',
+            value: this.chartBlockResults.js[2].value,
+            extra: this.chartBlockResults.js[2].extra,
+          },
+          {
+            name: 'WebAssembly',
+            value: this.chartBlockResults.wasm[2].value,
+            extra: this.chartBlockResults.wasm[2].extra,
+          },
+        ],
+      },
+      {
+        name: 'Median',
+        series: [
+          {
+            name: 'JavaScript',
+            value: this.chartBlockResults.js[3].value,
+            extra: this.chartBlockResults.js[3].extra,
+          },
+          {
+            name: 'WebAssembly',
+            value: this.chartBlockResults.wasm[3].value,
+            extra: this.chartBlockResults.wasm[3].extra,
+          },
+        ],
+      },
+    ];
     this.allResults = {
-      all: [...rawResults.js, ...rawResults.wasm],
-      allJs: rawResults.js,
-      allWasm: rawResults.wasm,
+      combined: [...rawResults.js, ...rawResults.wasm],
+      js: rawResults.js,
+      wasm: rawResults.wasm,
     };
     this.tablePreparedResults = tpr;
   }

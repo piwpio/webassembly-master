@@ -8,6 +8,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BarChartModule, NumberCardModule } from '@swimlane/ngx-charts';
 
 const routes: Routes = [
   {
@@ -26,6 +27,8 @@ const routes: Routes = [
     MatSnackBarModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    NumberCardModule,
+    BarChartModule,
   ],
   exports: [FibonacciComponent],
 })

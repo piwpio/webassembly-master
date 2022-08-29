@@ -2,11 +2,11 @@
   <form (submit)="$event.preventDefault(); runTest(+inputFibParam.value, +inputTestsNo.value)">
     <mat-form-field appearance="outline">
       <mat-label>Fibonacci param</mat-label>
-      <input matInput #inputFibParam type="number" value="10" [disabled]="!isReady || isRunning" />
+      <input matInput #inputFibParam type="number" value="30" [disabled]="!isReady || isRunning" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Number of tests</mat-label>
-      <input matInput #inputTestsNo type="number" value="3" [disabled]="!isReady || isRunning" />
+      <input matInput #inputTestsNo type="number" value="10" [disabled]="!isReady || isRunning" />
     </mat-form-field>
     <button mat-flat-button color="primary" type="submit" [disabled]="!isReady || isRunning">Run benchmark</button>
   </form>
@@ -22,7 +22,7 @@
   <table mat-table [dataSource]="tablePreparedResults" class="mat-elevation-z2">
     <ng-container matColumnDef="testNo">
       <th mat-header-cell *matHeaderCellDef>Test No.</th>
-      <td mat-cell *matCellDef="let element">{{ element.testNo }}.</td>
+      <td mat-cell *matCellDef="let element">{{ element.testNo + 1 }}.</td>
     </ng-container>
     <ng-container matColumnDef="js">
       <th mat-header-cell *matHeaderCellDef>JavaScript</th>
@@ -36,4 +36,22 @@
     <tr mat-header-row *matHeaderRowDef="tableDisplayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: tableDisplayedColumns"></tr>
   </table>
+
+  <div style="width: 100%; height: 160px">
+    <ngx-charts-number-card
+      *ngFor="let data of ['js', 'wasm']"
+      [results]="chartBlockResults[data]"
+      [cardColor]="'#000'"
+    ></ngx-charts-number-card>
+  </div>
+
+  <div style="width: 100%; height: 160px">
+    <ngx-charts-bar-vertical-2d
+      [results]="chartBarsResults"
+      [legend]="true"
+      [yAxisLabel]="'time [ms]'"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+    ></ngx-charts-bar-vertical-2d>
+  </div>
 </div>

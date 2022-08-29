@@ -29,6 +29,9 @@
       ],
       "@scripts/*": [
         "assets/scripts/*",
+      ],
+      "@models/*": [
+        "app/models/*",
       ]
     }
   },
