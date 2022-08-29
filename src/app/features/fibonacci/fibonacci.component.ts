@@ -4,6 +4,8 @@ import { Observable, Subject } from 'rxjs';
 import { fibonacci as fibonacciJS } from '@scripts/fibonacci/fibonacci';
 import { Fib, FibResult, FibResults, FibTests } from '@features/fibonacci/fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { isFastestTime, isSlowestTime } from '@services/utils';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'fibonacci',
@@ -16,7 +18,8 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   isRunning = false;
   testSuites: FibTests = {};
   tableDisplayedColumns: string[] = ['testNo', 'js', 'wasm'];
-  tablePreparedResults: { testNo: number; js: FibResult | '-'; wasm: FibResult | '-' }[] = [];
+  tablePreparedResults: { testNo: number; js: FibResult | '-'; wasm: FibResult | '-' }[] = null;
+  allResultValues: FibResult[] = [];
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -25,6 +28,11 @@ export class FibonacciComponent implements OnInit, OnDestroy {
     private readonly chRef: ChangeDetectorRef,
     private readonly matSnackBar: MatSnackBar
   ) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
 
   ngOnInit(): void {
     this.testSuites['js'] = {
@@ -51,32 +59,47 @@ export class FibonacciComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.tablePreparedResults = [];
+    this.tablePreparedResults = null;
     this.isRunning = true;
     this.chRef.markForCheck();
 
     setTimeout(() => {
-      this.test(fibNumber, testsNo).subscribe((results) => {
-        this.isRunning = false;
-        this.prepareResults(testsNo, results);
-        this.chRef.markForCheck();
-      });
+      this.test(fibNumber, testsNo)
+        .pipe(
+          takeUntil(this.destroy$)
+          // delay(500)
+        )
+        .subscribe((results) => {
+          this.isRunning = false;
+          this.prepareResults(testsNo, results);
+          this.chRef.markForCheck();
+        });
     }, 500);
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
+  getRowClass(results: FibResults): 'cell--slowest' | 'cell--fastest' | '' {
+    if (isFastestTime(+results, this.allResultValues)) {
+      return 'cell--fastest';
+    } else if (isSlowestTime(+results, this.allResultValues)) {
+      return 'cell--slowest';
+    } else {
+      return '';
+    }
   }
 
   private prepareResults(testsNo: number, rawResults: FibResults): void {
     const tpr = [];
+    this.allResultValues = [];
+
     for (let i = 0; i < testsNo; i++) {
       tpr.push({
         testNo: i,
         js: rawResults?.js?.[i] ?? '-',
         wasm: rawResults?.wasm?.[i] ?? '-',
       });
+
+      if (rawResults?.js?.[i]) this.allResultValues.push(rawResults.js[i]);
+      if (rawResults?.wasm?.[i]) this.allResultValues.push(rawResults.wasm[i]);
     }
 
     this.tablePreparedResults = tpr;
@@ -89,7 +112,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   private warmup(): Observable<FibResults> {
-    return this.test(1, 1);
+    return this.test(3, 1);
   }
 
   private test(fibNumber: number, testsNo: number): Observable<FibResults> {

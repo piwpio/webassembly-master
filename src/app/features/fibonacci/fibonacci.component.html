@@ -16,7 +16,9 @@
   <mat-spinner [diameter]="32"></mat-spinner>
 </div>
 
-<div class="results-container" *ngIf="tablePreparedResults?.length">
+<div class="no-results-container" *ngIf="!isRunning && tablePreparedResults?.length === 0">No results</div>
+
+<div class="results-container" *ngIf="!isRunning && tablePreparedResults?.length">
   <table mat-table [dataSource]="tablePreparedResults" class="mat-elevation-z2">
     <ng-container matColumnDef="testNo">
       <th mat-header-cell *matHeaderCellDef>Test No.</th>
@@ -24,11 +26,11 @@
     </ng-container>
     <ng-container matColumnDef="js">
       <th mat-header-cell *matHeaderCellDef>JavaScript</th>
-      <td mat-cell *matCellDef="let element">{{ element.js }}ms</td>
+      <td mat-cell [class]="getRowClass(element.js)" *matCellDef="let element">{{ element.js }}ms</td>
     </ng-container>
     <ng-container matColumnDef="wasm">
       <th mat-header-cell *matHeaderCellDef>WebAssembly</th>
-      <td mat-cell *matCellDef="let element">{{ element.wasm }}ms</td>
+      <td mat-cell [class]="getRowClass(element.wasm)" *matCellDef="let element">{{ element.wasm }}ms</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="tableDisplayedColumns"></tr>

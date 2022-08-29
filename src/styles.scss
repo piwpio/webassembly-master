@@ -29,10 +29,24 @@ body {
   }
 }
 
+.no-results-container {
+  text-align: center;
+}
+
 .results-container {
   width: 100%;
 
   table {
     width: 100%;
+
+    .cell--slowest {
+      color: red;
+      font-weight: bold;
+    }
+
+    .cell--fastest {
+      color: darkgreen;
+      font-weight: bold;
+    }
   }
 }
