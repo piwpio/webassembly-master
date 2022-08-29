@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { WebassemblyService } from '@services/webassembly.service';
-import { from, Observable, of, range, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { fibonacci as fibonacciJS } from '@scripts/fibonacci/fibonacci';
 import { Fib, FibResult, FibResults, FibTests } from '@features/fibonacci/fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getAverage, getFastest, getMedian, getSlowest, isFastestTime, isSlowestTime } from '@services/utils';
-import { concatAll, delay, map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ChartBarsData, ChartCardData } from '@models/charts.model';
 
 @Component({
@@ -177,37 +177,4 @@ export class FibonacciComponent implements OnInit, OnDestroy {
       observer.next(results);
     });
   }
-
-  // private test2(fibNumber: number, testsNo: number): Observable<FibResults> {
-  //   let testsCounter = 0;
-  //   let techCount = Object.keys(this.testSuites).length
-  //   const rawResults: FibResults = {js: [], wasm: []}
-  //
-  //   return new Observable<FibResults>((observer) => {
-  //     from(['js', 'wasm']).pipe(
-  //       map(tech => {
-  //         return range(1, testsNo).pipe(
-  //           map(testNo => {
-  //             const startTime = performance.now();
-  //             this.testSuites[tech](fibNumber);
-  //             const endTime = performance.now();
-  //             let diff = endTime - startTime;
-  //             if (diff === 0) diff = 0.000000000001;
-  //             return of({tech, testNo, diff});
-  //           }),
-  //           concatAll(),
-  //           delay(300)
-  //         )
-  //       }),
-  //       concatAll()
-  //     ).subscribe(res => {
-  //       testsCounter++;
-  //       rawResults[res.tech].push(res.diff);
-  //       if (testsNo * techCount <= testsCounter) {
-  //         observer.next(rawResults);
-  //         observer.complete();
-  //       }
-  //     })
-  //   });
-  // }
 }

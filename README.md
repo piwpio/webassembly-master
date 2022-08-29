@@ -16,3 +16,5 @@ npm run start
 ```
 
 Wait until test server runs and then go to [localhost](http://localhost:4200)
+
+For cpp programs the [emscripten](https://emscripten.org/docs/getting_started/downloads.html) compiler is necessary 
