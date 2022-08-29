@@ -16,11 +16,15 @@ import { takeUntil } from 'rxjs/operators';
 export class FibonacciComponent implements OnInit, OnDestroy {
   isReady = false;
   isRunning = false;
-  testSuites: FibTests = {};
   tableDisplayedColumns: string[] = ['testNo', 'js', 'wasm'];
   tablePreparedResults: { testNo: number; js: FibResult | '-'; wasm: FibResult | '-' }[] = null;
-  allResultValues: FibResult[] = [];
 
+  private testSuites: FibTests = {};
+  private allResults: {
+    all: FibResult[];
+    allJs: FibResult[];
+    allWasm: FibResult[];
+  } = null;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -78,9 +82,9 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   getRowClass(results: FibResults): 'cell--slowest' | 'cell--fastest' | '' {
-    if (isFastestTime(+results, this.allResultValues)) {
+    if (isFastestTime(+results, this.allResults.all)) {
       return 'cell--fastest';
-    } else if (isSlowestTime(+results, this.allResultValues)) {
+    } else if (isSlowestTime(+results, this.allResults.all)) {
       return 'cell--slowest';
     } else {
       return '';
@@ -89,19 +93,19 @@ export class FibonacciComponent implements OnInit, OnDestroy {
 
   private prepareResults(testsNo: number, rawResults: FibResults): void {
     const tpr = [];
-    this.allResultValues = [];
-
     for (let i = 0; i < testsNo; i++) {
       tpr.push({
         testNo: i,
         js: rawResults?.js?.[i] ?? '-',
         wasm: rawResults?.wasm?.[i] ?? '-',
       });
-
-      if (rawResults?.js?.[i]) this.allResultValues.push(rawResults.js[i]);
-      if (rawResults?.wasm?.[i]) this.allResultValues.push(rawResults.wasm[i]);
     }
 
+    this.allResults = {
+      all: [...rawResults.js, ...rawResults.wasm],
+      allJs: rawResults.js,
+      allWasm: rawResults.wasm,
+    };
     this.tablePreparedResults = tpr;
   }
 
