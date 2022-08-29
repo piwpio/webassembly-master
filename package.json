@@ -4,6 +4,7 @@
   "scripts": {
     "prepare": "husky install",
     "start": "ng serve --live-reload=false --configuration test",
+    "start-aot": "ng serve --live-reload=false",
     "build:test": "ng build",
     "build:prod": "ng build --prod",
     "lint": "npx eslint src/**/*.{js,ts} --fix",

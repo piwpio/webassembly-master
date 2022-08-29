@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { WebassemblyService } from '@services/webassembly.service';
-import { Observable, Subject } from 'rxjs';
+import { from, Observable, of, range, Subject } from 'rxjs';
 import { fibonacci as fibonacciJS } from '@scripts/fibonacci/fibonacci';
 import { Fib, FibResult, FibResults, FibTests } from '@features/fibonacci/fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getAverage, getFastest, getMedian, getSlowest, isFastestTime, isSlowestTime } from '@services/utils';
-import { takeUntil } from 'rxjs/operators';
+import { concatAll, delay, map, takeUntil } from 'rxjs/operators';
 import { ChartBarsData, ChartCardData } from '@models/charts.model';
 
 @Component({
@@ -38,16 +38,10 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.testSuites['js'] = {
-      testLabel: 'JavaScript method',
-      method: fibonacciJS as Fib,
-    };
+    this.testSuites['js'] = fibonacciJS as Fib;
 
     this.webassemblyService.initWasm('/assets/scripts/fibonacci/fibonacci.wasm').then((results) => {
-      this.testSuites['wasm'] = {
-        testLabel: 'WebAssembly method',
-        method: results.instance.exports.fibonacci as Fib,
-      };
+      this.testSuites['wasm'] = results.instance.exports.fibonacci as Fib;
 
       this.warmup().subscribe(() => {
         this.isReady = true;
@@ -171,7 +165,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
 
         for (let i = 0; i < testsNo; i++) {
           const startTime = performance.now();
-          testSuite.method(fibNumber);
+          testSuite(fibNumber);
           const endTime = performance.now();
 
           let diff = endTime - startTime;
@@ -183,4 +177,37 @@ export class FibonacciComponent implements OnInit, OnDestroy {
       observer.next(results);
     });
   }
+
+  // private test2(fibNumber: number, testsNo: number): Observable<FibResults> {
+  //   let testsCounter = 0;
+  //   let techCount = Object.keys(this.testSuites).length
+  //   const rawResults: FibResults = {js: [], wasm: []}
+  //
+  //   return new Observable<FibResults>((observer) => {
+  //     from(['js', 'wasm']).pipe(
+  //       map(tech => {
+  //         return range(1, testsNo).pipe(
+  //           map(testNo => {
+  //             const startTime = performance.now();
+  //             this.testSuites[tech](fibNumber);
+  //             const endTime = performance.now();
+  //             let diff = endTime - startTime;
+  //             if (diff === 0) diff = 0.000000000001;
+  //             return of({tech, testNo, diff});
+  //           }),
+  //           concatAll(),
+  //           delay(300)
+  //         )
+  //       }),
+  //       concatAll()
+  //     ).subscribe(res => {
+  //       testsCounter++;
+  //       rawResults[res.tech].push(res.diff);
+  //       if (testsNo * techCount <= testsCounter) {
+  //         observer.next(rawResults);
+  //         observer.complete();
+  //       }
+  //     })
+  //   });
+  // }
 }
