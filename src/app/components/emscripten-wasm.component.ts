@@ -1,5 +1,5 @@
 import { AfterViewInit, Component } from '@angular/core';
-import { EmscriptenService } from '@services/emscripten.service';
+import { WebassemblyService } from '@services/webassembly.service';
 import { EmscriptenModule } from '@models/emscripten.model';
 
 type EmscriptenModuleDecorator<M extends EmscriptenModule> = (module: M) => void;
@@ -15,7 +15,7 @@ export abstract class EmscriptenWasmComponent<M extends EmscriptenModule = Emscr
     private moduleExportName: string,
     private jsLoader: string,
     private scriptPath: string,
-    protected emscriptenService: EmscriptenService
+    protected emscriptenService: WebassemblyService
   ) {}
 
   get module(): M {

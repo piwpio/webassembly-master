@@ -5,7 +5,7 @@ import { mergeMap } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class EmscriptenService {
+export class WebassemblyService {
   constructor(private readonly http: HttpClient) {}
 
   initWasm(url: string, imports: WebAssembly.Imports = {}): Promise<WebAssembly.WebAssemblyInstantiatedSource> {

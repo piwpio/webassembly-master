@@ -1,7 +1,7 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EmscriptenWasmComponent } from '@components/emscripten-wasm.component';
-import { EmscriptenService } from '@services/emscripten.service';
+import { WebassemblyService } from '@services/webassembly.service';
 
 const getFileName = (filePath: string) => filePath.split('/').reverse()[0];
 
@@ -27,7 +27,7 @@ export class EdtestComponent extends EmscriptenWasmComponent {
   fileUploadAccept: string;
   supportsFullscreen: boolean;
 
-  constructor(private httpClient: HttpClient, private ngZone: NgZone, protected emscriptenService: EmscriptenService) {
+  constructor(private httpClient: HttpClient, private ngZone: NgZone, protected emscriptenService: WebassemblyService) {
     super('Cube3dModule', '3d-cube.js', '/assets/scripts/3d-test', emscriptenService);
 
     this.supportsFullscreen = !!requestFullscreen;
@@ -47,9 +47,9 @@ export class EdtestComponent extends EmscriptenWasmComponent {
           this.ngZone.run(() => (this.error = what));
         }
       };
-      setInterval(() => {
-        document.getElementById('fps').innerText = '' + Math.round((mod.__Z5getMsv() / 1_000_000) * 100) / 100;
-      }, 200);
+      // setInterval(() => {
+      //   document.getElementById('fps').innerText = '' + Math.round((mod.__Z5getMsv() / 1_000_000) * 100) / 100;
+      // }, 200);
     };
   }
 

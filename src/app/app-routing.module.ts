@@ -16,6 +16,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/edtest/edtest.module').then((m) => m.EdtestModule),
   },
   {
+    path: 'image',
+    loadChildren: () => import('./features/image/image.module').then((m) => m.ImageModule),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
