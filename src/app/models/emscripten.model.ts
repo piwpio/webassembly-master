@@ -8,12 +8,14 @@ export interface CcallOptions {
 }
 
 export interface EmscriptenModule {
-  preRun?: () => void;
+  preRun?: (() => void)[];
   postRun?: () => void;
   canvas?: HTMLCanvasElement;
   arguments?: string[];
   print?(what: string): void;
   printErr?(what: string): void;
+  _getMs?(): number;
+  __Z5getMsv?(): number;
   locateFile?(file: string): string;
   // @ts-ignore
   ccall?(funcName: string, returnType: string, argumentTypes: string[], arguments: any[], options?: CcallOptions): any;

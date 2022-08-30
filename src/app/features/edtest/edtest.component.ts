@@ -47,6 +47,9 @@ export class EdtestComponent extends EmscriptenWasmComponent {
           this.ngZone.run(() => (this.error = what));
         }
       };
+      setInterval(() => {
+        document.getElementById('fps').innerText = '' + Math.round((mod.__Z5getMsv() / 1_000_000) * 100) / 100;
+      }, 200);
     };
   }
 
