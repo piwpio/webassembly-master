@@ -18,6 +18,8 @@ export class ImageComponent implements AfterViewInit {
 
   private grayscaleWasm: Img;
   private invertWasm: Img;
+  private wasmMemory: any;
+  private array: any;
 
   constructor(private readonly webassemblyService: WebassemblyService) {}
 
@@ -26,25 +28,44 @@ export class ImageComponent implements AfterViewInit {
     this.ctx = this.canvas.nativeElement.getContext('2d');
 
     this.webassemblyService.initWasm('/assets/scripts/image/image.wasm').then((results) => {
-      console.log(results);
-      // this.grayscaleWasm = results.instance.exports._Z9grayscalePii as Img;
+      this.wasmMemory = results.instance.exports.memory;
+
       this.grayscaleWasm = results.instance.exports.grayscale as Img;
-      console.log(results.instance.exports.grayscale);
-      // this.invertWasm = results.instance.exports.invert as Img;
+      this.invertWasm = results.instance.exports.invert as Img;
+
       this.prepareImage();
     });
   }
 
-  test(method: Img): void {
+  test(method, isWasm = false): void {
     this.prepareCanvas();
     const imageData = this.ctx.getImageData(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
-    // const data = imageData.data.buffer.byteLength;
-    const startTime = performance.now();
-    // method(data, data.length);
-    this.ctx.putImageData(imageData, 0, 0);
-    const endTime = performance.now();
+    let startTime2;
+      let endTime2;
+      let diff2 = 0;
 
-    let diff = endTime - startTime;
+    const startTime = performance.now();
+
+    let array;
+    if (isWasm) {
+      // if (!this.array) {
+      //   this.array = new Int32Array(this.wasmMemory.buffer, 0, imageData.data.length);
+      // }
+      array = new Int32Array(this.wasmMemory.buffer, 0, imageData.data.length);
+      startTime2 = performance.now();
+      array.set(imageData.data);
+      endTime2 = performance.now();
+      diff2 = endTime2 - startTime2;
+    } else {
+      // array = imageData.data;
+      array = new Int32Array(imageData.data);
+    }
+    method(!isWasm ? array : 0, array.length);
+    imageData.data.set(array);
+    this.ctx.putImageData(imageData, 0, 0);
+
+    const endTime = performance.now();
+    let diff = endTime - startTime - diff2;
     if (diff === 0) diff = 0.000000000001;
 
     console.log(diff);
@@ -57,14 +78,20 @@ export class ImageComponent implements AfterViewInit {
       image.style.display = 'none';
       this.isReady = true;
 
-      this.test(this.invertJs as Img);
-      this.test(this.grayscaleJs as Img);
-      this.test(this.grayscaleWasm);
+      // this.test(this.invertJs as Img);
+      for (let i = 0; i < 10; i++) {
+        this.test(this.grayscaleJs);
+      }
+      for (let i = 0; i < 10; i++) {
+        this.test(this.grayscaleWasm, true);
+      }
+      // this.test(this.invertJs);
+      // this.test(this.invertWasm, true);
     };
     image.src = '/assets/images/niceView.jpeg';
   }
 
-  private invertJs(data: Uint8ClampedArray, size: number): void {
+  private invertJs(data: Int32Array, size: number): void {
     for (let i = 0; i < size; i += 4) {
       data[i] = 255 - data[i]; // red
       data[i + 1] = 255 - data[i + 1]; // green
@@ -72,7 +99,7 @@ export class ImageComponent implements AfterViewInit {
     }
   }
 
-  private grayscaleJs(data: Uint8ClampedArray, size: number): void {
+  private grayscaleJs(data: Int32Array, size: number): void {
     for (let i = 0; i < size; i += 4) {
       const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
       data[i] = avg; // red
