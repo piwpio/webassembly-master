@@ -41,9 +41,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
     this.testSuites['js'] = fibonacciJS as Fib;
 
     this.webassemblyService.initWasm('/assets/scripts/fibonacci/fibonacci.wasm').then((results) => {
-      const wasmInstance = results.instance;
-      console.log(wasmInstance.exports);
-      this.testSuites['wasm'] = wasmInstance.exports.fibonacci as Fib;
+      this.testSuites['wasm'] = results.instance.exports.fibonacci as Fib;
 
       this.warmup().subscribe(() => {
         this.isReady = true;
