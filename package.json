@@ -7,8 +7,8 @@
     "start-aot": "ng serve --live-reload=false",
     "build:test": "ng build",
     "build:prod": "ng build --prod",
-    "lint": "npx eslint src/**/*.{js,ts} --fix",
-    "prettier": "npx prettier src/**/*.{js,ts,html,css,scss} --write",
+    "lint": "npx eslint src/**/*.{ts} --fix",
+    "prettier": "npx prettier src/**/*.{ts,html,css,scss} --write",
     "postinstall": "husky install"
   },
   "private": true,
@@ -54,7 +54,7 @@
     "typescript": "~4.5.5"
   },
   "lint-staged": {
-    "*.{js,ts}": "eslint --fix",
-    "*.{js,ts,css,scss,html}": "prettier --write"
+    "*.{ts}": "eslint --fix",
+    "*.{ts,css,scss,html}": "prettier --write"
   }
 }

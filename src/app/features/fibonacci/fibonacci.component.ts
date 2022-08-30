@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { WebassemblyService } from '@services/webassembly.service';
+import { EmscriptenService } from '@services/emscripten.service';
 import { Observable, Subject } from 'rxjs';
 import { fibonacci as fibonacciJS } from '@scripts/fibonacci/fibonacci';
 import { Fib, FibResult, FibResults, FibTests } from '@features/fibonacci/fibonacci.model';
@@ -27,7 +27,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private readonly webassemblyService: WebassemblyService,
+    private readonly webassemblyService: EmscriptenService,
     private readonly chRef: ChangeDetectorRef,
     private readonly matSnackBar: MatSnackBar
   ) {}

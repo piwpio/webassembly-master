@@ -7,7 +7,10 @@ interface AppMenu {
   url: string;
 }
 
-const ROUTES: AppMenu[] = [{ label: 'Fibonacci', url: '/fib' }];
+const ROUTES: AppMenu[] = [
+  { label: 'Fibonacci', url: '/fib' },
+  { label: '3D cube', url: '/3dtest' },
+];
 
 @Component({
   selector: 'app-menu',

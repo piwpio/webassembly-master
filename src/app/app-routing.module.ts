@@ -12,6 +12,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/fibonacci/fibonacci.module').then((m) => m.FibonacciModule),
   },
   {
+    path: '3dtest',
+    loadChildren: () => import('./features/edtest/edtest.module').then((m) => m.EdtestModule),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
