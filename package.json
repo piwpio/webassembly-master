@@ -8,8 +8,7 @@
     "build:test": "ng build",
     "build:prod": "ng build --prod",
     "lint": "npx eslint src/**/*.ts --fix",
-    "prettier": "npx prettier src/**/*.{ts,html,css,scss} --write",
-    "postinstall": "husky install"
+    "prettier": "npx prettier src/**/*.{ts,html,css,scss} --write"
   },
   "private": true,
   "dependencies": {
