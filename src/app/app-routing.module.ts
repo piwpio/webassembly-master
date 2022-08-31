@@ -20,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/image/image.module').then((m) => m.ImageModule),
   },
   {
+    path: 'sort',
+    loadChildren: () => import('./features/sort/sort.module').then((m) => m.SortModule),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

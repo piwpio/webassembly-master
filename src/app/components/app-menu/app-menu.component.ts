@@ -11,6 +11,7 @@ const ROUTES: AppMenu[] = [
   { label: 'Fibonacci', url: '/fib' },
   { label: '3D cube', url: '/3dtest' },
   { label: 'Image processing', url: '/image' },
+  { label: 'Array sorting', url: '/sort' },
 ];
 
 @Component({
