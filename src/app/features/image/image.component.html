@@ -28,8 +28,14 @@
 
 
 <div class="result-container__canvas" [class.visible]="!isRunning && tablePreparedResults?.length">
-  <canvas #canvasJs class="canvas__result"></canvas>
-  <canvas #canvasWasm class="canvas__result"></canvas>
+  <div class="canvas__container">
+    <div>JS image results</div>
+    <canvas #canvasJs class="canvas__result"></canvas>
+  </div>
+  <div class="canvas__container">
+    <div>WASM image results</div>
+    <canvas #canvasWasm class="canvas__result"></canvas>
+  </div>
 </div>
 
 <div class="results-container" *ngIf="!isRunning && tablePreparedResults?.length">

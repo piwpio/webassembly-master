@@ -174,16 +174,16 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
   private prepareResults(testsNo: number, rawResults: ImageTestResults): void {
     this.chartBlockResults = {
       js: [
-        { name: 'Best JS recursive', value: getFastest(rawResults.js) },
-        { name: 'Worst JS recursive', value: getSlowest(rawResults.js) },
-        { name: 'Average JS recursive', value: getAverage(rawResults.js) },
-        { name: 'Median JS recursive', value: getMedian(rawResults.js) },
+        { name: 'Best JS', value: getFastest(rawResults.js) },
+        { name: 'Worst JS', value: getSlowest(rawResults.js) },
+        { name: 'Average JS', value: getAverage(rawResults.js) },
+        { name: 'Median JS', value: getMedian(rawResults.js) },
       ],
       wasm: [
-        { name: 'Best WASM while', value: getFastest(rawResults.wasm) },
-        { name: 'Worst WASM while', value: getSlowest(rawResults.wasm) },
-        { name: 'Average WASM while', value: getAverage(rawResults.wasm) },
-        { name: 'Median WASM while', value: getMedian(rawResults.wasm) },
+        { name: 'Best WASM', value: getFastest(rawResults.wasm) },
+        { name: 'Worst WASM', value: getSlowest(rawResults.wasm) },
+        { name: 'Average WASM', value: getAverage(rawResults.wasm) },
+        { name: 'Median WASM', value: getMedian(rawResults.wasm) },
       ],
     };
     this.chartBarsResults = [
