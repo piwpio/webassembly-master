@@ -26,19 +26,23 @@
 <div class="no-results-container" *ngIf="!isRunning && tablePreparedResults?.length === 0">No results</div>
 
 <div class="results-container" *ngIf="!isRunning && tablePreparedResults?.length">
+  <div class="result-numbers">
+    <span>JS: {{ results.js }}</span>
+    <span>WASM: {{ results.wasm }}</span>
+  </div>
   <table mat-table [dataSource]="tablePreparedResults" class="mat-elevation-z2">
     <ng-container matColumnDef="testNo">
       <th mat-header-cell *matHeaderCellDef>Test No.</th>
       <td mat-cell *matCellDef="let element">{{ element.testNo + 1 }}.</td>
     </ng-container>
     <ng-container matColumnDef="js">
-      <th mat-header-cell *matHeaderCellDef>JS recursive</th>
+      <th mat-header-cell *matHeaderCellDef>JS</th>
       <td mat-cell [class]="getRowClass(element.js, allResults.combined)" *matCellDef="let element">
         {{ element.js }}ms
       </td>
     </ng-container>
     <ng-container matColumnDef="wasm">
-      <th mat-header-cell *matHeaderCellDef>WASM recursive</th>
+      <th mat-header-cell *matHeaderCellDef>WASM</th>
       <td mat-cell [class]="getRowClass(element.wasm, allResults.combined)" *matCellDef="let element">
         {{ element.wasm }}ms
       </td>

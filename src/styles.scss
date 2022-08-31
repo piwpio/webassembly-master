@@ -36,6 +36,14 @@ body {
 .results-container {
   width: 100%;
 
+  .result-numbers {
+    font-size: 1.2em;
+    padding-bottom: 10px;
+    span {
+      margin-left: 10px
+    }
+  }
+
   table {
     width: 100%;
     .cell {

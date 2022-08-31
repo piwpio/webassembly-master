@@ -9,7 +9,7 @@ import {
   FibonacciTablePreparedResults,
   FibonacciChartBlockResults,
   FibonacciTests,
-  FibonacciAllResults, FibonacciFunctions,
+  FibonacciAllResults, FibonacciFunctions, CalculationResults,
 } from '@features/fibonacci/fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
@@ -34,6 +34,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   chartBlockResults: FibonacciChartBlockResults = null;
   chartBarsResults: ChartBarsData[] = null;
   allResults: FibonacciAllResults = null;
+  results: CalculationResults = null;
   private testSuites: FibonacciFunctions = {};
   private allTestSuites: FibonacciAllFunctions = {};
 
@@ -94,6 +95,11 @@ export class FibonacciComponent implements OnInit, OnDestroy {
         wasm: isRecursive ? this.allTestSuites.wasmRecursive : this.allTestSuites.wasmWhile,
       }
 
+      this.results = {
+        js: 0,
+        wasm: 0,
+      };
+
       const results = {} as FibonacciTestResults;
       for (const test of FibonacciTests) {
         results[test] = [];
@@ -103,14 +109,14 @@ export class FibonacciComponent implements OnInit, OnDestroy {
         const testSuite = this.testSuites[type];
         for (let i = 0; i < testsNo; i++) {
           const startTime = performance.now();
-          const a = testSuite(fibNumber);
-          console.log(a);
+          const res = testSuite(fibNumber);
           const endTime = performance.now();
 
           let diff = endTime - startTime;
           if (diff === 0) diff = 0.000000000001;
 
-          results[type].push(round2(diff));
+          this.results[type] = res;
+          results[type].push(isRecursive ? round2(diff) : diff);
         }
       }
       observer.next(results);

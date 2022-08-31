@@ -38,3 +38,8 @@ export interface FibonacciAllResults {
   js: ResultType[];
   wasm: ResultType[];
 }
+
+export interface CalculationResults {
+  js: number;
+  wasm: number;
+}
