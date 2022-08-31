@@ -57,8 +57,8 @@ export class SortComponent implements OnInit, OnDestroy {
 
     this.webassemblyService.initWasm('/assets/scripts/sort/sort.wasm').then((results) => {
       this.wasmMemory = results.instance.exports.memory;
-      this.testSuites.wasmQs = results.instance.exports._Z9quickSortPfii as SortFunction;
-      this.testSuites.wasmStd = results.instance.exports._Z4sortPfii as SortFunction;
+      this.testSuites.wasmQs = results.instance.exports.quickSort as SortFunction;
+      this.testSuites.wasmStd = results.instance.exports.sort as SortFunction;
 
       this.warmup().subscribe(() => {
         this.isReady = true;
