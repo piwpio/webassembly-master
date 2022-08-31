@@ -9,20 +9,12 @@ import {
   SortTestResults,
   SortAllResults,
 } from '@features/sort/sort.model';
-import {
-  getAverage,
-  getFastest,
-  getMedian,
-  getRowClass,
-  getSlowest,
-  quickSortPartition,
-  round2,
-} from '@services/utils';
+import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 import { takeUntil } from 'rxjs/operators';
 import { ChartBarsData } from '@models/charts.model';
-import * as math from 'mathjs';
 import { Observable, Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { jsQuickSort, sortJs, sortMathJs } from '@scripts/sort/sort';
 
 @Component({
   selector: 'sort',
@@ -59,9 +51,9 @@ export class SortComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.testSuites.js = this.sortJs;
-    this.testSuites.jsQs = this.jsQuickSort.bind(this);
-    this.testSuites.jsMath = this.sortMathJs;
+    this.testSuites.js = sortJs;
+    this.testSuites.jsQs = jsQuickSort;
+    this.testSuites.jsMath = sortMathJs;
 
     this.webassemblyService.initWasm('/assets/scripts/sort/sort.wasm').then((results) => {
       this.wasmMemory = results.instance.exports.memory;
@@ -137,21 +129,6 @@ export class SortComponent implements OnInit, OnDestroy {
       }
       observer.next(results);
     });
-  }
-
-  private sortJs(data: number[], _start: number, _end: number): void {
-    data.sort((a, b) => a - b);
-  }
-
-  private sortMathJs(data: number[], _start: number, _end: number): void {
-    math.sort(data, (a, b) => a - b);
-  }
-
-  private jsQuickSort(data: number[], start: number, end: number): void {
-    if (start >= end) return;
-    const p = quickSortPartition(data, start, end);
-    this.jsQuickSort(data, start, p - 1);
-    this.jsQuickSort(data, p + 1, end);
   }
 
   private generateFeed(arraySize: number, floats = true, max = 200_000_000): void {
