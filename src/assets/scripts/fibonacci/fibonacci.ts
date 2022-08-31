@@ -3,7 +3,7 @@ export const fibonacciRecursive = (n: number): number => {
   else return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
 };
 
-export const fibonacciLoop = (n: number) => {
+export const fibonacciWhile = (n: number) => {
   let a = 1;
   let b = 0;
   let tmp;

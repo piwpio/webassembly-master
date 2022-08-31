@@ -3,33 +3,31 @@ import { ChartCardData } from '@models/charts.model';
 
 export type FibonacciFunction = (fib: number) => number;
 
-export type FibResult = DOMHighResTimeStamp;
-
-export const FibonacciTests = ['js', 'wasm'];
+export const FibonacciTests = ['jsRecursive', 'wasmRecursive'];
 
 export interface FibonacciFunctions {
-  js?: FibonacciFunction;
-  wasm?: FibonacciFunction;
+  jsRecursive?: FibonacciFunction;
+  wasmRecursive?: FibonacciFunction;
 }
 
 export interface FibonacciTestResults {
-  js: ResultType[];
-  wasm: ResultType[];
+  jsRecursive: ResultType[];
+  wasmRecursive: ResultType[];
 }
 
 export interface FibonacciTablePreparedResults {
   testNo: number;
-  js: ResultType;
-  wasm: ResultType;
+  jsRecursive: ResultType;
+  wasmRecursive: ResultType;
 }
 
 export interface FibonacciChartBlockResults {
-  js: ChartCardData[];
-  wasm: ChartCardData[];
+  jsRecursive: ChartCardData[];
+  wasmRecursive: ChartCardData[];
 }
 
 export interface FibonacciAllResults {
   combined: ResultType[];
-  js: ResultType[];
-  wasm: ResultType[];
+  jsRecursive: ResultType[];
+  wasmRecursive: ResultType[];
 }

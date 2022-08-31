@@ -49,11 +49,11 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.testSuites.js = fibonacciRecursive;
+    this.testSuites.jsRecursive = fibonacciRecursive;
 
     this.webassemblyService.initWasm('/assets/scripts/fibonacci/fibonacci.wasm').then((results) => {
       // this.testSuites.wasmWhile = results.instance.exports._Z14fibonacciWhilei as FibonacciFunction;
-      this.testSuites.wasm = results.instance.exports._Z18fibonacciRecursivei as FibonacciFunction;
+      this.testSuites.wasmRecursive = results.instance.exports._Z18fibonacciRecursivei as FibonacciFunction;
 
       this.warmup().subscribe(() => {
         this.isReady = true;
@@ -110,58 +110,58 @@ export class FibonacciComponent implements OnInit, OnDestroy {
 
   private prepareResults(testsNo: number, rawResults: FibonacciTestResults): void {
     this.chartBlockResults = {
-      js: [
-        { name: 'Best JavaScript', value: getFastest(rawResults.js) },
-        { name: 'Worst JavaScript', value: getSlowest(rawResults.js) },
-        { name: 'Average JavaScript', value: getAverage(rawResults.js) },
-        { name: 'Median JavaScript', value: getMedian(rawResults.js) },
+      jsRecursive: [
+        { name: 'Best JS recursive', value: getFastest(rawResults.jsRecursive) },
+        { name: 'Worst JS recursive', value: getSlowest(rawResults.jsRecursive) },
+        { name: 'Average JS recursive', value: getAverage(rawResults.jsRecursive) },
+        { name: 'Median JS recursive', value: getMedian(rawResults.jsRecursive) },
       ],
-      wasm: [
-        { name: 'Best WebAssembly', value: getFastest(rawResults.wasm) },
-        { name: 'Worst WebAssembly', value: getSlowest(rawResults.wasm) },
-        { name: 'Average WebAssembly', value: getAverage(rawResults.wasm) },
-        { name: 'Median WebAssembly', value: getMedian(rawResults.wasm) },
+      wasmRecursive: [
+        { name: 'Best WASM recursive', value: getFastest(rawResults.wasmRecursive) },
+        { name: 'Worst WASM recursive', value: getSlowest(rawResults.wasmRecursive) },
+        { name: 'Average WASM recursive', value: getAverage(rawResults.wasmRecursive) },
+        { name: 'Median WASM recursive', value: getMedian(rawResults.wasmRecursive) },
       ],
     };
     this.chartBarsResults = [
       {
         name: 'Best',
         series: [
-          { name: 'JavaScript', value: this.chartBlockResults.js[0].value },
-          { name: 'WebAssembly', value: this.chartBlockResults.wasm[0].value },
+          { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[0].value },
+          { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[0].value },
         ],
       },
       {
         name: 'Worst',
         series: [
-          { name: 'JavaScript', value: this.chartBlockResults.js[1].value },
-          { name: 'WebAssembly', value: this.chartBlockResults.wasm[1].value },
+          { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[1].value },
+          { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[1].value },
         ],
       },
       {
         name: 'Average',
         series: [
-          { name: 'JavaScript', value: this.chartBlockResults.js[2].value },
-          { name: 'WebAssembly', value: this.chartBlockResults.wasm[2].value },
+          { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[2].value },
+          { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[2].value },
         ],
       },
       {
         name: 'Median',
         series: [
-          { name: 'JavaScript', value: this.chartBlockResults.js[3].value },
-          { name: 'WebAssembly', value: this.chartBlockResults.wasm[3].value },
+          { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[3].value },
+          { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[3].value },
         ],
       },
     ];
 
-    this.allResults = Object.assign(rawResults, { combined: [...rawResults.js, ...rawResults.wasm] });
+    this.allResults = Object.assign(rawResults, { combined: [...rawResults.jsRecursive, ...rawResults.wasmRecursive] });
 
     const tablePreparedResults = [];
     for (let i = 0; i < testsNo; i++) {
       tablePreparedResults.push({
         testNo: i,
-        js: rawResults?.js?.[i] ?? -1,
-        wasm: rawResults?.wasm?.[i] ?? -1,
+        jsRecursive: rawResults?.jsRecursive?.[i] ?? -1,
+        wasmRecursive: rawResults?.wasmRecursive?.[i] ?? -1,
       });
     }
     this.tablePreparedResults = tablePreparedResults;
