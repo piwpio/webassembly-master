@@ -2,7 +2,7 @@
   <form (submit)="$event.preventDefault(); runTest(+inputFibParam.value, +inputTestsNo.value, algorithm.value)">
     <mat-form-field appearance="outline">
       <mat-label>Fibonacci param</mat-label>
-      <input matInput #inputFibParam type="number" min="0" max="200" value="30" [disabled]="!isReady || isRunning" />
+      <input matInput #inputFibParam type="number" min="0" max="100" value="30" [disabled]="!isReady || isRunning" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Number of tests</mat-label>
