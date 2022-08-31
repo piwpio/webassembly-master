@@ -1,4 +1,14 @@
 <div class="form__container">
+  <button (click)="fileInput.click()" mat-mini-fab color="primary" class="button__image" [disabled]="!isReady || isRunning">
+    <mat-icon >add_a_photo</mat-icon>
+  </button>
+  <input
+    #fileInput
+    style="display: none"
+    type="file"
+    accept="image/*"
+  />
+
   <form (submit)="$event.preventDefault(); runTest(+inputTestsNo.value, alghoritm.value)">
     <mat-form-field appearance="outline">
       <mat-label>Number of tests</mat-label>

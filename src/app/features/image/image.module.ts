@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { BarChartModule, NumberCardModule } from '@swimlane/ngx-charts';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 
 const routes: Routes = [
   {
@@ -19,7 +20,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [ImageComponent],
-  imports: [CommonModule, RouterModule.forChild(routes), MatSnackBarModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, NumberCardModule, BarChartModule, MatTableModule],
+  imports: [CommonModule, RouterModule.forChild(routes), MatSnackBarModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, NumberCardModule, BarChartModule, MatTableModule, MatIconModule],
   exports: [ImageComponent],
 })
 export class ImageModule {}

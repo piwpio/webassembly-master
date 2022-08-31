@@ -4,6 +4,13 @@
   height: 100%;
 }
 
+.form__container {
+  .button__image {
+    top: -8px;
+    right: 10px;
+  }
+}
+
 .canvas__source--container {
   position:relative;
   display: flex;

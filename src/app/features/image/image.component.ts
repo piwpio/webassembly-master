@@ -19,7 +19,7 @@ import { ChartBarsData } from '@models/charts.model';
 import { jsGrayscale, jsInvert, jsSephia } from '@scripts/image/image';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, Subject } from 'rxjs';
+import { fromEvent, Observable, Subject } from 'rxjs';
 import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 
 @Component({
@@ -32,6 +32,7 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvasOriginal') canvasOriginal: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasJs') canvasJs: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasWasm') canvasWasm: ElementRef<HTMLCanvasElement>;
+  @ViewChild('fileInput') fileInputRef: ElementRef<HTMLInputElement>;
 
   isReady = false;
   isRunning = false;
@@ -62,6 +63,12 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    const fileInput: HTMLInputElement = this.fileInputRef.nativeElement;
+    fromEvent(fileInput, 'change')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.readImageFile(fileInput.files[0]);
+      })
 
     this.ctxOriginal = this.canvasOriginal.nativeElement.getContext('2d');
     this.ctxJs = this.canvasJs.nativeElement.getContext('2d');
@@ -93,7 +100,7 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
     this.chRef.markForCheck();
 
     setTimeout(() => {
-      this.test2(testsNo, testType)
+      this.test(testsNo, testType)
         .pipe(takeUntil(this.destroy$))
         .subscribe((results) => {
           this.isRunning = false;
@@ -103,7 +110,7 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
     }, 500);
   }
 
-  private test2(testsNo: number, testType: 'Grayscale' | 'Invert' | 'Sephia'): Observable<ImageTestResults> {
+  private test(testsNo: number, testType: 'Grayscale' | 'Invert' | 'Sephia'): Observable<ImageTestResults> {
     return new Observable<ImageTestResults>((observer) => {
       this.testSuites = {
         js: this.allTestSuites[`js${testType}`],
@@ -152,7 +159,11 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private prepareImage(): void {
+  private readImageFile(file: File): void {
+    this.prepareImage(URL.createObjectURL(file));
+  }
+
+  private prepareImage(src?: string): void {
     this.isReady = false;
     const image = new Image();
     image.onload = () => {
@@ -163,7 +174,7 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
       this.isReady = true;
       this.chRef.markForCheck();
     };
-    image.src = '/assets/images/niceView.jpeg';
+    image.src = src ?? '/assets/images/niceView.jpeg';
   }
 
   private prepareCanvas(ctx: CanvasRenderingContext2D): void {
