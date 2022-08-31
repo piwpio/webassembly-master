@@ -1,1 +1,79 @@
-<canvas #canvas class="canvas__image"></canvas>
+<div class="form__container">
+  <form (submit)="$event.preventDefault(); runTest(+inputTestsNo.value, alghoritm.value)">
+    <mat-form-field appearance="outline">
+      <mat-label>Number of tests</mat-label>
+      <input matInput #inputTestsNo type="number" min="1" max="10" value="10" [disabled]="!isReady || isRunning" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Algorithm</mat-label>
+      <mat-select #alghoritm [disabled]="!isReady || isRunning" [value]="'Grayscale'">
+        <mat-option [value]="'Grayscale'">Grayscale</mat-option>
+        <mat-option [value]="'Invert'">Invert</mat-option>
+        <mat-option [value]="'Sephia'">Sephia</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" [disabled]="!isReady || isRunning">Run benchmark</button>
+  </form>
+</div>
+
+<div class="canvas__source--container">
+  <canvas #canvasOriginal></canvas>
+  <div *ngIf="image?.width && image?.height" class="size">
+    <div>Width: {{ image?.width }}</div>
+    <div>Height: {{ image?.height }}</div>
+  </div>
+</div>
+
+<div class="no-results-container" *ngIf="!isRunning && tablePreparedResults?.length === 0">No results</div>
+
+
+<div class="result-container__canvas" [class.visible]="!isRunning && tablePreparedResults?.length">
+  <canvas #canvasJs class="canvas__result"></canvas>
+  <canvas #canvasWasm class="canvas__result"></canvas>
+</div>
+
+<div class="results-container" *ngIf="!isRunning && tablePreparedResults?.length">
+  <table mat-table [dataSource]="tablePreparedResults" class="mat-elevation-z2">
+    <ng-container matColumnDef="testNo">
+      <th mat-header-cell *matHeaderCellDef>Test No.</th>
+      <td mat-cell *matCellDef="let element">{{ element.testNo + 1 }}.</td>
+    </ng-container>
+    <ng-container matColumnDef="js">
+      <th mat-header-cell *matHeaderCellDef>JS</th>
+      <td mat-cell [class]="getRowClass(element.js, allResults.combined)" *matCellDef="let element">
+        {{ element.js }}ms
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="wasm">
+      <th mat-header-cell *matHeaderCellDef>WASM</th>
+      <td mat-cell [class]="getRowClass(element.wasm, allResults.combined)" *matCellDef="let element">
+        {{ element.wasm }}ms
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="tableDisplayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: tableDisplayedColumns"></tr>
+  </table>
+
+  <div class="charts__container">
+    <div class="chart__container--card">
+      <ngx-charts-number-card
+        *ngFor="let data of imageTests"
+        [results]="chartBlockResults[data]"
+        [cardColor]="'#000'"
+      ></ngx-charts-number-card>
+    </div>
+
+    <div class="chart__container--bar">
+      <ngx-charts-bar-vertical-2d
+        [results]="chartBarsResults"
+        [legend]="true"
+        [yAxisLabel]="'time [ms]'"
+        [showYAxisLabel]="true"
+        [xAxis]="true"
+        [yAxis]="true"
+      ></ngx-charts-bar-vertical-2d>
+    </div>
+  </div>
+</div>
+

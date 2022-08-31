@@ -4,7 +4,35 @@
   height: 100%;
 }
 
-canvas {
+.canvas__source--container {
+  position:relative;
+  display: flex;
+  justify-content: center;
+
+  canvas {
+    width:50%;
+  }
+
+  .size {
+    position: absolute;
+    right: 10%;
+  }
+}
+
+.result-container__canvas {
+  visibility: hidden;
+  display: flex;
+
+  &.visible {
+    visibility: visible;
+  }
+
+  canvas {
+    width: 50%;
+  }
+}
+
+.canvas__result {
   width: 100%;
   height: 100%;
 }

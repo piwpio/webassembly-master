@@ -9,13 +9,13 @@ import {
   FibonacciTablePreparedResults,
   FibonacciChartBlockResults,
   FibonacciTests,
-  FibonacciAllResults, FibonacciFunctions, CalculationResults,
+  FibonacciAllResults, FibonacciFunctions,
 } from '@features/fibonacci/fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 import { takeUntil } from 'rxjs/operators';
 import { ChartBarsData } from '@models/charts.model';
-import { BigInteger } from '@angular/compiler/src/i18n/big_integer';
+import { CalculationResults } from '@models/common.model';
 
 @Component({
   selector: 'fibonacci',
@@ -103,10 +103,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
       const results = {} as FibonacciTestResults;
       for (const test of FibonacciTests) {
         results[test] = [];
-      }
-
-      for (const type of FibonacciTests) {
-        const testSuite = this.testSuites[type];
+        const testSuite = this.testSuites[test];
         for (let i = 0; i < testsNo; i++) {
           const startTime = performance.now();
           const res = testSuite(fibNumber);
@@ -115,8 +112,8 @@ export class FibonacciComponent implements OnInit, OnDestroy {
           let diff = endTime - startTime;
           if (diff === 0) diff = 0.000000000001;
 
-          this.results[type] = res;
-          results[type].push(isRecursive ? round2(diff) : diff);
+          this.results[test] = res;
+          results[test].push(isRecursive ? round2(diff) : diff);
         }
       }
       observer.next(results);

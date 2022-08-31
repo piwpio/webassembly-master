@@ -8,7 +8,7 @@
       <mat-label>Number of tests</mat-label>
       <input matInput #inputTestsNo type="number"  min="1" max="10" value="10" [disabled]="!isReady || isRunning" />
     </mat-form-field>
-    <mat-form-field style="margin-top: 1.6em" appearance="outline">
+    <mat-form-field appearance="outline">
       <mat-label>Data type</mat-label>
       <mat-select #dataType [disabled]="!isReady || isRunning" [value]="true">
         <mat-option [value]="true">Float</mat-option>
@@ -22,6 +22,8 @@
 <div class="loading-container" *ngIf="isRunning">
   <mat-spinner [diameter]="32"></mat-spinner>
 </div>
+
+<div class="no-results-container" *ngIf="!isRunning && tablePreparedResults?.length === 0">No results</div>
 
 <div class="results-container" *ngIf="!isRunning && tablePreparedResults?.length">
   <table mat-table [dataSource]="tablePreparedResults" class="mat-elevation-z2">

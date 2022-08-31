@@ -121,7 +121,8 @@ export class SortComponent implements OnInit, OnDestroy {
           // Specific code
 
           const endTime = performance.now();
-          let diff = endTime - startTime - diff2;
+          // let diff = endTime - startTime - diff2;
+          let diff = endTime - startTime;
           if (diff === 0) diff = 0.000000000001;
 
           results[test].push(round2(diff));

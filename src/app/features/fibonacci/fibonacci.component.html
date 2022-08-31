@@ -8,7 +8,7 @@
       <mat-label>Number of tests</mat-label>
       <input matInput #inputTestsNo type="number" min="1" max="10" value="10" [disabled]="!isReady || isRunning" />
     </mat-form-field>
-    <mat-form-field style="margin-top: 1.6em" appearance="outline">
+    <mat-form-field appearance="outline">
       <mat-label>Algorithm</mat-label>
       <mat-select #algorithm [disabled]="!isReady || isRunning" [value]="false">
         <mat-option [value]="false">While loop</mat-option>
