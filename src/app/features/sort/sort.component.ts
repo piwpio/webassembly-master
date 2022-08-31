@@ -25,6 +25,7 @@ export class SortComponent implements OnInit, OnDestroy {
   isRunning = false;
   getRowClass = getRowClass;
 
+  sortTests = SortTests
   tableDisplayedColumns: string[] = ['testNo', ...SortTests];
   tablePreparedResults: SortTablePreparedResults[] = null;
   chartBlockResults: SortChartBlockResults = null;
@@ -32,7 +33,7 @@ export class SortComponent implements OnInit, OnDestroy {
   allResults: SortAllResults = null;
   private testSuites: SortFunctions = {};
 
-  private feed: (string | number)[] = null;
+  private feed: number[] = null;
   private wasmMemory: any;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -94,10 +95,10 @@ export class SortComponent implements OnInit, OnDestroy {
 
       for (const test of SortTests) {
         const testSuite = this.testSuites[test];
-        const isWasm = test.indexOf('wasm') > 0;
+        const isWasm = test.indexOf('wasm') > -1;
 
-        // Specific code
         for (let i = 0; i < testsNo; i++) {
+          // Specific code
           this.generateFeed(arraySize, floats); //max 30_000_000
           let startTime2;
           let endTime2;
@@ -113,7 +114,6 @@ export class SortComponent implements OnInit, OnDestroy {
             diff2 = endTime2 - startTime2;
           } else {
             array = this.feed;
-            // array = new Float32Array(this.wasmMemory.buffer, 0, this.feed.length);
           }
           testSuite(!isWasm ? array : array.byteOffset, 0, array.length - 1);
           // Specific code
@@ -122,7 +122,7 @@ export class SortComponent implements OnInit, OnDestroy {
           let diff = endTime - startTime - diff2;
           if (diff === 0) diff = 0.000000000001;
 
-          results[test].push(diff);
+          results[test].push(Math.round(diff * 100) / 100);
         }
       }
       observer.next(results);

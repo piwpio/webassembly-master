@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { BarChartModule, NumberCardModule } from '@swimlane/ngx-charts';
 
 const routes: Routes = [
   {
@@ -19,7 +20,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [SortComponent],
-  imports: [CommonModule, RouterModule.forChild(routes), MatSnackBarModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatProgressSpinnerModule, MatTableModule],
+  imports: [CommonModule, RouterModule.forChild(routes), MatSnackBarModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatProgressSpinnerModule, MatTableModule, BarChartModule, NumberCardModule],
   exports: [SortComponent],
 })
 export class SortModule {}
