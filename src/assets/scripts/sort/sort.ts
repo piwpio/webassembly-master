@@ -1,10 +1,10 @@
 import * as math from 'mathjs';
 
-export const sortJs = (data: number[], _start: number, _end: number): void => {
+export const jsSort = (data: number[], _start: number, _end: number): void => {
   data.sort((a, b) => a - b);
 };
 
-export const sortMathJs = (data: number[], _start: number, _end: number): void => {
+export const jsSortMath = (data: number[], _start: number, _end: number): void => {
   math.sort(data, (a, b) => a - b);
 };
 

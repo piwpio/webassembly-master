@@ -14,7 +14,7 @@ import { takeUntil } from 'rxjs/operators';
 import { ChartBarsData } from '@models/charts.model';
 import { Observable, Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { jsQuickSort, sortJs, sortMathJs } from '@scripts/sort/sort';
+import { jsQuickSort, jsSort, jsSortMath } from '@scripts/sort/sort';
 
 @Component({
   selector: 'sort',
@@ -51,9 +51,9 @@ export class SortComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.testSuites.js = sortJs;
+    this.testSuites.js = jsSort;
     this.testSuites.jsQs = jsQuickSort;
-    this.testSuites.jsMath = sortMathJs;
+    this.testSuites.jsMath = jsSortMath;
 
     this.webassemblyService.initWasm('/assets/scripts/sort/sort.wasm').then((results) => {
       this.wasmMemory = results.instance.exports.memory;

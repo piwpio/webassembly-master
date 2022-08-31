@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { WebassemblyService } from '@services/webassembly.service';
 import { Observable, Subject } from 'rxjs';
-import { fibonacciRecursive } from '@scripts/fibonacci/fibonacci';
+import { jsFibonacciRecursive, jsFibonacciWhile } from '@scripts/fibonacci/fibonacci';
 import {
   FibonacciFunction,
   FibonacciTestResults,
@@ -49,10 +49,11 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.testSuites.jsRecursive = fibonacciRecursive;
+    this.testSuites.jsRecursive = jsFibonacciRecursive;
+    this.testSuites.jsWhile = jsFibonacciWhile;
 
     this.webassemblyService.initWasm('/assets/scripts/fibonacci/fibonacci.wasm').then((results) => {
-      // this.testSuites.wasmWhile = results.instance.exports._Z14fibonacciWhilei as FibonacciFunction;
+      this.testSuites.wasmWhile = results.instance.exports._Z14fibonacciWhilei as FibonacciFunction;
       this.testSuites.wasmRecursive = results.instance.exports._Z18fibonacciRecursivei as FibonacciFunction;
 
       this.warmup().subscribe(() => {
@@ -92,10 +93,12 @@ export class FibonacciComponent implements OnInit, OnDestroy {
 
       for (const type of FibonacciTests) {
         const testSuite = this.testSuites[type];
-
+        console.log(type);
         for (let i = 0; i < testsNo; i++) {
           const startTime = performance.now();
-          testSuite(fibNumber);
+          // console.log(fibNumber)
+          const a = testSuite(fibNumber);
+          console.log(a);
           const endTime = performance.now();
 
           let diff = endTime - startTime;
@@ -109,6 +112,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   private prepareResults(testsNo: number, rawResults: FibonacciTestResults): void {
+    console.log(rawResults);
     this.chartBlockResults = {
       jsRecursive: [
         { name: 'Best JS recursive', value: getFastest(rawResults.jsRecursive) },
@@ -116,11 +120,23 @@ export class FibonacciComponent implements OnInit, OnDestroy {
         { name: 'Average JS recursive', value: getAverage(rawResults.jsRecursive) },
         { name: 'Median JS recursive', value: getMedian(rawResults.jsRecursive) },
       ],
+      jsWhile: [
+        { name: 'Best JS while', value: getFastest(rawResults.jsWhile) },
+        { name: 'Best JS while', value: getSlowest(rawResults.jsWhile) },
+        { name: 'Best JS while', value: getAverage(rawResults.jsWhile) },
+        { name: 'Best JS while', value: getMedian(rawResults.jsWhile) },
+      ],
       wasmRecursive: [
         { name: 'Best WASM recursive', value: getFastest(rawResults.wasmRecursive) },
         { name: 'Worst WASM recursive', value: getSlowest(rawResults.wasmRecursive) },
         { name: 'Average WASM recursive', value: getAverage(rawResults.wasmRecursive) },
         { name: 'Median WASM recursive', value: getMedian(rawResults.wasmRecursive) },
+      ],
+      wasmWhile: [
+        { name: 'Best WASM while', value: getFastest(rawResults.wasmWhile) },
+        { name: 'Worst WASM while', value: getSlowest(rawResults.wasmWhile) },
+        { name: 'Average WASM while', value: getAverage(rawResults.wasmWhile) },
+        { name: 'Median WASM while', value: getMedian(rawResults.wasmWhile) },
       ],
     };
     this.chartBarsResults = [
@@ -128,40 +144,50 @@ export class FibonacciComponent implements OnInit, OnDestroy {
         name: 'Best',
         series: [
           { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[0].value },
+          { name: 'JS while', value: this.chartBlockResults.jsWhile[0].value },
           { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[0].value },
+          { name: 'WASM while', value: this.chartBlockResults.wasmWhile[0].value },
         ],
       },
       {
         name: 'Worst',
         series: [
           { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[1].value },
+          { name: 'JS while', value: this.chartBlockResults.jsWhile[1].value },
           { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[1].value },
+          { name: 'WASM while', value: this.chartBlockResults.wasmWhile[1].value },
         ],
       },
       {
         name: 'Average',
         series: [
           { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[2].value },
+          { name: 'JS while', value: this.chartBlockResults.jsWhile[2].value },
           { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[2].value },
+          { name: 'WASM while', value: this.chartBlockResults.wasmWhile[2].value },
         ],
       },
       {
         name: 'Median',
         series: [
           { name: 'JS recursive', value: this.chartBlockResults.jsRecursive[3].value },
+          { name: 'JS while', value: this.chartBlockResults.jsWhile[3].value },
           { name: 'WASM recursive', value: this.chartBlockResults.wasmRecursive[3].value },
+          { name: 'WASM while', value: this.chartBlockResults.wasmWhile[3].value },
         ],
       },
     ];
 
-    this.allResults = Object.assign(rawResults, { combined: [...rawResults.jsRecursive, ...rawResults.wasmRecursive] });
+    this.allResults = Object.assign(rawResults, { combined: [...rawResults.jsRecursive,...rawResults.jsWhile, ...rawResults.wasmRecursive, ...rawResults.wasmWhile] });
 
     const tablePreparedResults = [];
     for (let i = 0; i < testsNo; i++) {
       tablePreparedResults.push({
         testNo: i,
         jsRecursive: rawResults?.jsRecursive?.[i] ?? -1,
+        jsWhile: rawResults?.jsWhile?.[i] ?? -1,
         wasmRecursive: rawResults?.wasmRecursive?.[i] ?? -1,
+        wasmWhile: rawResults?.wasmWhile?.[i] ?? -1,
       });
     }
     this.tablePreparedResults = tablePreparedResults;

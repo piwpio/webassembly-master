@@ -25,15 +25,27 @@
       <td mat-cell *matCellDef="let element">{{ element.testNo + 1 }}.</td>
     </ng-container>
     <ng-container matColumnDef="jsRecursive">
-      <th mat-header-cell *matHeaderCellDef>JavaScript</th>
+      <th mat-header-cell *matHeaderCellDef>JS recursive</th>
       <td mat-cell [class]="getRowClass(element.jsRecursive, allResults.combined)" *matCellDef="let element">
         {{ element.jsRecursive }}ms
       </td>
     </ng-container>
+    <ng-container matColumnDef="jsWhile">
+      <th mat-header-cell *matHeaderCellDef>JS while</th>
+      <td mat-cell [class]="getRowClass(element.jsWhile, allResults.combined)" *matCellDef="let element">
+        {{ element.jsWhile }}ms
+      </td>
+    </ng-container>
     <ng-container matColumnDef="wasmRecursive">
-      <th mat-header-cell *matHeaderCellDef>WebAssembly</th>
+      <th mat-header-cell *matHeaderCellDef>WASM recursive</th>
       <td mat-cell [class]="getRowClass(element.wasmRecursive, allResults.combined)" *matCellDef="let element">
         {{ element.wasmRecursive }}ms
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="wasmWhile">
+      <th mat-header-cell *matHeaderCellDef>WASM while</th>
+      <td mat-cell [class]="getRowClass(element.wasmWhile, allResults.combined)" *matCellDef="let element">
+        {{ element.wasmWhile }}ms
       </td>
     </ng-container>
 
