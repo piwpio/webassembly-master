@@ -5,9 +5,19 @@ import {
   SortChartBlockResults,
   SortTablePreparedResults,
   SortFunctions,
-  SortTests, SortTestResults, SortAllResults
+  SortTests,
+  SortTestResults,
+  SortAllResults,
 } from '@features/sort/sort.model';
-import { getAverage, getFastest, getMedian, getRowClass, getSlowest, quickSortPartition } from '@services/utils';
+import {
+  getAverage,
+  getFastest,
+  getMedian,
+  getRowClass,
+  getSlowest,
+  quickSortPartition,
+  round2,
+} from '@services/utils';
 import { takeUntil } from 'rxjs/operators';
 import { ChartBarsData } from '@models/charts.model';
 import * as math from 'mathjs';
@@ -25,7 +35,7 @@ export class SortComponent implements OnInit, OnDestroy {
   isRunning = false;
   getRowClass = getRowClass;
 
-  sortTests = SortTests
+  sortTests = SortTests;
   tableDisplayedColumns: string[] = ['testNo', ...SortTests];
   tablePreparedResults: SortTablePreparedResults[] = null;
   chartBlockResults: SortChartBlockResults = null;
@@ -37,8 +47,11 @@ export class SortComponent implements OnInit, OnDestroy {
   private wasmMemory: any;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly webassemblyService: WebassemblyService, private readonly chRef: ChangeDetectorRef,
-  private readonly matSnackBar: MatSnackBar) {}
+  constructor(
+    private readonly webassemblyService: WebassemblyService,
+    private readonly chRef: ChangeDetectorRef,
+    private readonly matSnackBar: MatSnackBar
+  ) {}
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
@@ -49,7 +62,6 @@ export class SortComponent implements OnInit, OnDestroy {
     this.testSuites.js = this.sortJs;
     this.testSuites.jsQs = this.jsQuickSort.bind(this);
     this.testSuites.jsMath = this.sortMathJs;
-
 
     this.webassemblyService.initWasm('/assets/scripts/sort/sort.wasm').then((results) => {
       this.wasmMemory = results.instance.exports.memory;
@@ -63,8 +75,8 @@ export class SortComponent implements OnInit, OnDestroy {
     });
   }
 
-  runTest(testsNo: number, arraySize: number, floats: boolean) {
-    if (!this.areInputsValid(testsNo)) {
+  runTest(testsNo: number, arraySize: number, floats: boolean): void {
+    if (!this.areInputsValid(testsNo, arraySize, floats)) {
       this.matSnackBar.open('Invalid inputs');
       return;
     }
@@ -74,10 +86,8 @@ export class SortComponent implements OnInit, OnDestroy {
     this.chRef.markForCheck();
 
     setTimeout(() => {
-      this.test2(testsNo, arraySize, floats)
-        .pipe(
-          takeUntil(this.destroy$)
-        )
+      this.test(testsNo, arraySize, floats)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((results) => {
           this.isRunning = false;
           this.prepareResults(testsNo, results);
@@ -86,7 +96,7 @@ export class SortComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-  private test2(testsNo, arraySize, floats): Observable<SortTestResults> {
+  private test(testsNo, arraySize, floats): Observable<SortTestResults> {
     return new Observable<SortTestResults>((observer) => {
       const results = {} as SortTestResults;
       for (const test of SortTests) {
@@ -122,29 +132,25 @@ export class SortComponent implements OnInit, OnDestroy {
           let diff = endTime - startTime - diff2;
           if (diff === 0) diff = 0.000000000001;
 
-          results[test].push(Math.round(diff * 100) / 100);
+          results[test].push(round2(diff));
         }
       }
       observer.next(results);
     });
   }
 
-  private sortJs(data: number[], start: number, end: number): void {
+  private sortJs(data: number[], _start: number, _end: number): void {
     data.sort((a, b) => a - b);
   }
 
-  private sortMathJs(data: number[], start: number, end: number): void {
+  private sortMathJs(data: number[], _start: number, _end: number): void {
     math.sort(data, (a, b) => a - b);
   }
 
   private jsQuickSort(data: number[], start: number, end: number): void {
-    // base case
     if (start >= end) return;
-    // partitioning the array
     const p = quickSortPartition(data, start, end);
-    // Sorting the left part
     this.jsQuickSort(data, start, p - 1);
-    // Sorting the right part
     this.jsQuickSort(data, p + 1, end);
   }
 
@@ -161,28 +167,7 @@ export class SortComponent implements OnInit, OnDestroy {
     }
   }
 
-  private areInputsValid(testsNo: number): boolean {
-    testsNo ??= 0;
-    return !(testsNo < 1);
-  }
-
-  private warmup(): Observable<SortTestResults> {
-    return this.test2(1, 10, true);
-  }
-
   private prepareResults(testsNo: number, rawResults: SortTestResults): void {
-    const tpr = [];
-    for (let i = 0; i < testsNo; i++) {
-      tpr.push({
-        testNo: i,
-        js: rawResults?.js?.[i] ?? '-',
-        jsMath: rawResults?.jsMath?.[i] ?? '-',
-        jsQs: rawResults?.jsQs?.[i] ?? '-',
-        wasmQs: rawResults?.wasmQs?.[i] ?? '-',
-        wasmStd: rawResults?.wasmStd?.[i] ?? '-',
-      });
-    }
-
     this.chartBlockResults = {
       js: [
         { name: 'Best JS Native', value: getFastest(rawResults.js) },
@@ -259,11 +244,37 @@ export class SortComponent implements OnInit, OnDestroy {
       },
     ];
 
-    this.allResults = Object.assign(
-      rawResults,
-      { combined: [...rawResults.js, ...rawResults.jsMath, ...rawResults.jsQs, ...rawResults.wasmQs, ...rawResults.wasmStd]}
-    )
+    this.allResults = Object.assign(rawResults, {
+      combined: [
+        ...rawResults.js,
+        ...rawResults.jsMath,
+        ...rawResults.jsQs,
+        ...rawResults.wasmQs,
+        ...rawResults.wasmStd,
+      ],
+    });
 
-    this.tablePreparedResults = tpr;
+    const tablePreparedResults = [];
+    for (let i = 0; i < testsNo; i++) {
+      tablePreparedResults.push({
+        testNo: i,
+        js: rawResults?.js?.[i] ?? -1,
+        jsMath: rawResults?.jsMath?.[i] ?? -1,
+        jsQs: rawResults?.jsQs?.[i] ?? -1,
+        wasmQs: rawResults?.wasmQs?.[i] ?? -1,
+        wasmStd: rawResults?.wasmStd?.[i] ?? -1,
+      });
+    }
+    this.tablePreparedResults = tablePreparedResults;
+  }
+
+  private areInputsValid(testsNo: number, arraySize: number, floats: boolean): boolean {
+    testsNo ??= 0;
+    arraySize ??= 0;
+    return !(floats === undefined || testsNo < 1 || arraySize < 1 || arraySize > 30000000);
+  }
+
+  private warmup(): Observable<SortTestResults> {
+    return this.test(1, 10, true);
   }
 }

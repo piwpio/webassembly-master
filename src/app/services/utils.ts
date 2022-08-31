@@ -1,4 +1,4 @@
-import { FibResults } from '@features/fibonacci/fibonacci.model';
+import { FibonacciTestResults } from '@features/fibonacci/fibonacci.model';
 import { ResultType } from '@models/common.model';
 
 export const isFastestTime = (result: number, allResults: number[]): boolean => allResults.every((r) => result <= r);
@@ -31,7 +31,9 @@ export const quickSortPartition = (arr: number[], start: number, end: number): n
   return pivotIndex;
 };
 
-export const getRowClass = (result: ResultType, allResults: ResultType[] ): 'cell--slowest' | 'cell--fastest' | '' => {
+export const round2 = (n: number): number => Math.round(n * 100) / 100;
+
+export const getRowClass = (result: ResultType, allResults: ResultType[]): 'cell--slowest' | 'cell--fastest' | '' => {
   if (isFastestTime(+result, allResults)) {
     return 'cell--fastest';
   } else if (isSlowestTime(+result, allResults)) {
@@ -39,4 +41,4 @@ export const getRowClass = (result: ResultType, allResults: ResultType[] ): 'cel
   } else {
     return '';
   }
-}
+};

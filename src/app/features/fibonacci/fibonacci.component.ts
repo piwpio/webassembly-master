@@ -1,12 +1,20 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { WebassemblyService } from '@services/webassembly.service';
 import { Observable, Subject } from 'rxjs';
-import { fibonacci as fibonacciJS } from '@scripts/fibonacci/fibonacci';
-import { Fib, FibResult, FibResults, FibTests } from '@features/fibonacci/fibonacci.model';
+import { fibonacciRecursive } from '@scripts/fibonacci/fibonacci';
+import {
+  FibonacciFunction,
+  FibonacciTestResults,
+  FibonacciFunctions,
+  FibonacciTablePreparedResults,
+  FibonacciChartBlockResults,
+  FibonacciTests,
+  FibonacciAllResults,
+} from '@features/fibonacci/fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { getAverage, getFastest, getMedian, getSlowest, isFastestTime, isSlowestTime } from '@services/utils';
+import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 import { takeUntil } from 'rxjs/operators';
-import { ChartBarsData, ChartCardData } from '@models/charts.model';
+import { ChartBarsData } from '@models/charts.model';
 
 @Component({
   selector: 'fibonacci',
@@ -17,13 +25,16 @@ import { ChartBarsData, ChartCardData } from '@models/charts.model';
 export class FibonacciComponent implements OnInit, OnDestroy {
   isReady = false;
   isRunning = false;
-  tableDisplayedColumns: string[] = ['testNo', 'js', 'wasm'];
-  tablePreparedResults: { testNo: number; js: FibResult | '-'; wasm: FibResult | '-' }[] = null;
-  chartBlockResults: { [k in 'js' | 'wasm']: ChartCardData[] } = null;
-  chartBarsResults: ChartBarsData[] = null;
+  getRowClass = getRowClass;
 
-  private testSuites: FibTests = {};
-  private allResults: { [k in 'combined' | 'js' | 'wasm']: FibResult[] } = null;
+  fibonacciTests = FibonacciTests;
+  tableDisplayedColumns: string[] = ['testNo', ...FibonacciTests];
+  tablePreparedResults: FibonacciTablePreparedResults[] = null;
+  chartBlockResults: FibonacciChartBlockResults = null;
+  chartBarsResults: ChartBarsData[] = null;
+  allResults: FibonacciAllResults = null;
+  private testSuites: FibonacciFunctions = {};
+
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -38,10 +49,11 @@ export class FibonacciComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.testSuites['js'] = fibonacciJS as Fib;
+    this.testSuites.js = fibonacciRecursive;
 
     this.webassemblyService.initWasm('/assets/scripts/fibonacci/fibonacci.wasm').then((results) => {
-      this.testSuites['wasm'] = results.instance.exports.fibonacci as Fib;
+      // this.testSuites.wasmWhile = results.instance.exports._Z14fibonacciWhilei as FibonacciFunction;
+      this.testSuites.wasm = results.instance.exports._Z18fibonacciRecursivei as FibonacciFunction;
 
       this.warmup().subscribe(() => {
         this.isReady = true;
@@ -50,7 +62,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
     });
   }
 
-  runTest(fibNumber: number, testsNo: number) {
+  runTest(fibNumber: number, testsNo: number): void {
     if (!this.areInputsValid(fibNumber, testsNo)) {
       this.matSnackBar.open('Invalid inputs');
       return;
@@ -62,10 +74,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.test(fibNumber, testsNo)
-        .pipe(
-          takeUntil(this.destroy$)
-          // delay(500)
-        )
+        .pipe(takeUntil(this.destroy$))
         .subscribe((results) => {
           this.isRunning = false;
           this.prepareResults(testsNo, results);
@@ -74,26 +83,32 @@ export class FibonacciComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-  getRowClass(results: FibResults): 'cell--slowest' | 'cell--fastest' | '' {
-    if (isFastestTime(+results, this.allResults.combined)) {
-      return 'cell--fastest';
-    } else if (isSlowestTime(+results, this.allResults.combined)) {
-      return 'cell--slowest';
-    } else {
-      return '';
-    }
+  private test(fibNumber: number, testsNo: number): Observable<FibonacciTestResults> {
+    return new Observable<FibonacciTestResults>((observer) => {
+      const results = {} as FibonacciTestResults;
+      for (const test of FibonacciTests) {
+        results[test] = [];
+      }
+
+      for (const type of FibonacciTests) {
+        const testSuite = this.testSuites[type];
+
+        for (let i = 0; i < testsNo; i++) {
+          const startTime = performance.now();
+          testSuite(fibNumber);
+          const endTime = performance.now();
+
+          let diff = endTime - startTime;
+          if (diff === 0) diff = 0.000000000001;
+
+          results[type].push(round2(diff));
+        }
+      }
+      observer.next(results);
+    });
   }
 
-  private prepareResults(testsNo: number, rawResults: FibResults): void {
-    const tpr = [];
-    for (let i = 0; i < testsNo; i++) {
-      tpr.push({
-        testNo: i,
-        js: rawResults?.js?.[i] ?? '-',
-        wasm: rawResults?.wasm?.[i] ?? '-',
-      });
-    }
-
+  private prepareResults(testsNo: number, rawResults: FibonacciTestResults): void {
     this.chartBlockResults = {
       js: [
         { name: 'Best JavaScript', value: getFastest(rawResults.js) },
@@ -138,12 +153,18 @@ export class FibonacciComponent implements OnInit, OnDestroy {
         ],
       },
     ];
-    this.allResults = {
-      combined: [...rawResults.js, ...rawResults.wasm],
-      js: rawResults.js,
-      wasm: rawResults.wasm,
-    };
-    this.tablePreparedResults = tpr;
+
+    this.allResults = Object.assign(rawResults, { combined: [...rawResults.js, ...rawResults.wasm] });
+
+    const tablePreparedResults = [];
+    for (let i = 0; i < testsNo; i++) {
+      tablePreparedResults.push({
+        testNo: i,
+        js: rawResults?.js?.[i] ?? -1,
+        wasm: rawResults?.wasm?.[i] ?? -1,
+      });
+    }
+    this.tablePreparedResults = tablePreparedResults;
   }
 
   private areInputsValid(fibNumber: number, testsNo: number): boolean {
@@ -152,29 +173,7 @@ export class FibonacciComponent implements OnInit, OnDestroy {
     return !(fibNumber < 0 || testsNo < 1);
   }
 
-  private warmup(): Observable<FibResults> {
+  private warmup(): Observable<FibonacciTestResults> {
     return this.test(3, 1);
-  }
-
-  private test(fibNumber: number, testsNo: number): Observable<FibResults> {
-    return new Observable<FibResults>((observer) => {
-      const results = { js: [], wasm: [] };
-
-      for (const type of ['js', 'wasm']) {
-        const testSuite = this.testSuites[type];
-
-        for (let i = 0; i < testsNo; i++) {
-          const startTime = performance.now();
-          testSuite(fibNumber);
-          const endTime = performance.now();
-
-          let diff = endTime - startTime;
-          if (diff === 0) diff = 0.000000000001;
-
-          results[type].push(diff);
-        }
-      }
-      observer.next(results);
-    });
   }
 }

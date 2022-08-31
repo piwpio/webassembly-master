@@ -26,11 +26,15 @@
     </ng-container>
     <ng-container matColumnDef="js">
       <th mat-header-cell *matHeaderCellDef>JavaScript</th>
-      <td mat-cell [class]="getRowClass(element.js)" *matCellDef="let element">{{ element.js }}ms</td>
+      <td mat-cell [class]="getRowClass(element.js, allResults.combined)" *matCellDef="let element">
+        {{ element.js }}ms
+      </td>
     </ng-container>
     <ng-container matColumnDef="wasm">
       <th mat-header-cell *matHeaderCellDef>WebAssembly</th>
-      <td mat-cell [class]="getRowClass(element.wasm)" *matCellDef="let element">{{ element.wasm }}ms</td>
+      <td mat-cell [class]="getRowClass(element.wasm, allResults.combined)" *matCellDef="let element">
+        {{ element.wasm }}ms
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="tableDisplayedColumns"></tr>
@@ -40,7 +44,7 @@
   <div class="charts__container">
     <div class="chart__container--card">
       <ngx-charts-number-card
-        *ngFor="let data of ['js', 'wasm']"
+        *ngFor="let data of fibonacciTests"
         [results]="chartBlockResults[data]"
         [cardColor]="'#000'"
       ></ngx-charts-number-card>

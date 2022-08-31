@@ -3,7 +3,7 @@ import { ResultType } from '@models/common.model';
 
 export type SortFunction = (data: number[], start: number, end: number) => void;
 
-export const SortTests = ['js', 'jsMath', 'jsQs', 'wasmQs', 'wasmStd']
+export const SortTests = ['js', 'jsMath', 'jsQs', 'wasmQs', 'wasmStd'];
 
 export interface SortFunctions {
   js?: SortFunction;
@@ -21,7 +21,7 @@ export interface SortTestResults {
   wasmStd: ResultType[];
 }
 
-export type SortTablePreparedResults = {
+export interface SortTablePreparedResults {
   testNo: number;
   js: ResultType;
   jsMath: ResultType;
@@ -30,7 +30,7 @@ export type SortTablePreparedResults = {
   wasmStd: ResultType;
 }
 
-export type SortChartBlockResults = {
+export interface SortChartBlockResults {
   js: ChartCardData[];
   jsMath: ChartCardData[];
   jsQs: ChartCardData[];
