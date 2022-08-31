@@ -1,12 +1,19 @@
 <div class="form__container">
-  <form (submit)="$event.preventDefault(); runTest(+inputFibParam.value, +inputTestsNo.value)">
+  <form (submit)="$event.preventDefault(); runTest(+inputFibParam.value, +inputTestsNo.value, algorithm.value)">
     <mat-form-field appearance="outline">
       <mat-label>Fibonacci param</mat-label>
-      <input matInput #inputFibParam type="number" value="30" [disabled]="!isReady || isRunning" />
+      <input matInput #inputFibParam type="number" min="0" max="200" value="30" [disabled]="!isReady || isRunning" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Number of tests</mat-label>
-      <input matInput #inputTestsNo type="number" value="10" [disabled]="!isReady || isRunning" />
+      <input matInput #inputTestsNo type="number" min="1" max="10" value="10" [disabled]="!isReady || isRunning" />
+    </mat-form-field>
+    <mat-form-field style="margin-top: 1.6em" appearance="outline">
+      <mat-label>Algorithm</mat-label>
+      <mat-select #algorithm [disabled]="!isReady || isRunning" [value]="false">
+        <mat-option [value]="false">While loop</mat-option>
+        <mat-option [value]="true">Recursive</mat-option>
+      </mat-select>
     </mat-form-field>
     <button mat-flat-button color="primary" type="submit" [disabled]="!isReady || isRunning">Run benchmark</button>
   </form>
@@ -24,28 +31,16 @@
       <th mat-header-cell *matHeaderCellDef>Test No.</th>
       <td mat-cell *matCellDef="let element">{{ element.testNo + 1 }}.</td>
     </ng-container>
-    <ng-container matColumnDef="jsRecursive">
+    <ng-container matColumnDef="js">
       <th mat-header-cell *matHeaderCellDef>JS recursive</th>
-      <td mat-cell [class]="getRowClass(element.jsRecursive, allResults.combined)" *matCellDef="let element">
-        {{ element.jsRecursive }}ms
+      <td mat-cell [class]="getRowClass(element.js, allResults.combined)" *matCellDef="let element">
+        {{ element.js }}ms
       </td>
     </ng-container>
-    <ng-container matColumnDef="jsWhile">
-      <th mat-header-cell *matHeaderCellDef>JS while</th>
-      <td mat-cell [class]="getRowClass(element.jsWhile, allResults.combined)" *matCellDef="let element">
-        {{ element.jsWhile }}ms
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="wasmRecursive">
+    <ng-container matColumnDef="wasm">
       <th mat-header-cell *matHeaderCellDef>WASM recursive</th>
-      <td mat-cell [class]="getRowClass(element.wasmRecursive, allResults.combined)" *matCellDef="let element">
-        {{ element.wasmRecursive }}ms
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="wasmWhile">
-      <th mat-header-cell *matHeaderCellDef>WASM while</th>
-      <td mat-cell [class]="getRowClass(element.wasmWhile, allResults.combined)" *matCellDef="let element">
-        {{ element.wasmWhile }}ms
+      <td mat-cell [class]="getRowClass(element.wasm, allResults.combined)" *matCellDef="let element">
+        {{ element.wasm }}ms
       </td>
     </ng-container>
 
