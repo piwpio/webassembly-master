@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./src",
+    "baseUrl": "./client/src",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -19,19 +19,19 @@
     ],
     "paths": {
       "@services/*": [
-        "app/services/*",
+        "app/services/*"
       ],
       "@components/*": [
-        "app/components/*",
+        "app/components/*"
       ],
       "@features/*": [
-        "app/features/*",
+        "app/features/*"
       ],
       "@scripts/*": [
-        "assets/scripts/*",
+        "assets/scripts/*"
       ],
       "@models/*": [
-        "app/models/*",
+        "app/models/*"
       ]
     }
   },

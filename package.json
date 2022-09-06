@@ -7,8 +7,8 @@
     "start-aot": "ng serve --live-reload=false",
     "build:test": "ng build",
     "build:prod": "ng build --prod",
-    "lint": "npx eslint src/**/*.ts --fix",
-    "prettier": "npx prettier src/**/*.{ts,html,css,scss} --write"
+    "lint": "npx eslint client/src/**/*.ts --fix",
+    "prettier": "npx prettier client/src/**/*.{ts,html,css,scss} --write"
   },
   "private": true,
   "dependencies": {
