@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Directive } from '@angular/core';
 import { WebassemblyService } from '@services/webassembly.service';
 import { EmscriptenModule } from '@models/emscripten.model';
 
@@ -6,7 +6,7 @@ type EmscriptenModuleDecorator<M extends EmscriptenModule> = (module: M) => void
 
 const noopModuleDecorator = (mod: EmscriptenModule) => mod;
 
-@Component({})
+@Directive()
 export abstract class EmscriptenWasmComponent<M extends EmscriptenModule = EmscriptenModule> implements AfterViewInit {
   protected moduleDecorator: EmscriptenModuleDecorator<M>;
   private resolvedModule: M;
