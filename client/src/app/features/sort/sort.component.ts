@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { WebassemblyService } from '../../services/webassembly.service';
+import { WebassemblyService } from '@services/webassembly.service';
 import {
   SortFunction,
   SortChartBlockResults,
@@ -9,12 +9,12 @@ import {
   SortTestResults,
   SortAllResults,
 } from './sort.model';
-import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '../../services/utils';
+import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 import { takeUntil } from 'rxjs/operators';
-import { ChartBarsData } from '../../models/charts.model';
+import { ChartBarsData } from '@models/charts.model';
 import { Observable, Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { jsQuickSort, jsSort, jsSortMath } from '../../../assets/scripts/sort/sort';
+import { jsQuickSort, jsSort, jsSortMath } from '@scripts/sort/sort';
 
 @Component({
   selector: 'sort',

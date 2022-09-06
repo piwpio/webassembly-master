@@ -7,7 +7,7 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
-import { WebassemblyService } from '../../services/webassembly.service';
+import { WebassemblyService } from '@services/webassembly.service';
 import {
   ImageAllFunctions,
   ImageAllResults,
@@ -18,12 +18,12 @@ import {
   ImageTestResults,
   ImageTests,
 } from './image.model';
-import { ChartBarsData } from '../../models/charts.model';
-import { jsGrayscale, jsInvert, jsSephia } from '../../../assets/scripts/image/image';
+import { ChartBarsData } from '@models/charts.model';
+import { jsGrayscale, jsInvert, jsSephia } from '@scripts/image/image';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '../../services/utils';
+import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 
 @Component({
   selector: 'image',

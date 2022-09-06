@@ -1,6 +1,6 @@
 import { AfterViewInit, Directive } from '@angular/core';
-import { WebassemblyService } from '../services/webassembly.service';
-import { EmscriptenModule } from '../models/emscripten.model';
+import { WebassemblyService } from '@services/webassembly.service';
+import { EmscriptenModule } from '@models/emscripten.model';
 
 type EmscriptenModuleDecorator<M extends EmscriptenModule> = (module: M) => void;
 

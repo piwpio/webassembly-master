@@ -1,5 +1,5 @@
-import { ChartCardData } from '../../models/charts.model';
-import { ResultType } from '../../models/common.model';
+import { ChartCardData } from '@models/charts.model';
+import { ResultType } from '@models/common.model';
 
 export type SortFunction = (data: number[], start: number, end: number) => void;
 

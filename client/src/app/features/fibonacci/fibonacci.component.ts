@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { WebassemblyService } from '../../services/webassembly.service';
+import { WebassemblyService } from '@services/webassembly.service';
 import { Observable, Subject } from 'rxjs';
-import { jsFibonacciRecursive, jsFibonacciWhile } from '../../../assets/scripts/fibonacci/fibonacci';
+import { jsFibonacciRecursive, jsFibonacciWhile } from '@scripts/fibonacci/fibonacci';
 import {
   FibonacciFunction,
   FibonacciTestResults,
@@ -13,10 +13,10 @@ import {
   FibonacciFunctions,
 } from './fibonacci.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '../../services/utils';
+import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 import { takeUntil } from 'rxjs/operators';
-import { ChartBarsData } from '../../models/charts.model';
-import { CalculationResults } from '../../models/common.model';
+import { ChartBarsData } from '@models/charts.model';
+import { CalculationResults } from '@models/common.model';
 
 @Component({
   selector: 'fibonacci',

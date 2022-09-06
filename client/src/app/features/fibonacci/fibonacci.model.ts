@@ -1,5 +1,5 @@
-import { ResultType } from '../../models/common.model';
-import { ChartCardData } from '../../models/charts.model';
+import { ResultType } from '@models/common.model';
+import { ChartCardData } from '@models/charts.model';
 
 export type FibonacciFunction = (fib: number) => number;
 

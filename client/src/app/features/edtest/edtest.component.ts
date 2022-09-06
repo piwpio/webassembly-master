@@ -1,7 +1,7 @@
-import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { EmscriptenWasmComponent } from '../../components/emscripten-wasm.component';
-import { WebassemblyService } from '../../services/webassembly.service';
+import { EmscriptenWasmComponent } from '@components/emscripten-wasm.component';
+import { WebassemblyService } from '@services/webassembly.service';
 
 const getFileName = (filePath: string) => filePath.split('/').reverse()[0];
 
