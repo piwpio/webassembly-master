@@ -34,6 +34,8 @@ const run = (testSuites, _testData) => {
   });
 }
 
+// ########################### MESSAGE CALLBACKS
+
 function orReadyMessage(worker, workerTestData) {
   worker.send({
     event: 'runTest',
@@ -58,14 +60,28 @@ function onResultsMessage(worker, testSuites) {
   });
 }
 
+function onMemoryUsage(worker, data) {
+  // console.log("Worker with ID: %d consumes %imb of memory", worker.id, data.rss / 1024 / 1024);
+}
+
+// ########################### WORKERS
+
 function addNewWorker() {
   const worker = cluster.fork();
   ACTIVE_WORKERS[worker.id] = worker;
-  console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
+  // console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
 }
 
-function onMemoryUsage(worker, data) {
-  // console.log("Worker with ID: %d consumes %imb of memory", worker.id, data.rss / 1024 / 1024);
+function killWorker(worker) {
+  return new Promise((resolve, _reject) => {
+    worker.disconnect()
+    setTimeout(() => {
+      worker.kill()
+      delete ACTIVE_WORKERS[worker.id];
+      console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
+      resolve()
+    }, 2000);
+  })
 }
 
 function onExit(signal, code) {
@@ -81,9 +97,7 @@ function onExit(signal, code) {
   }
 }
 
-function sendSocketWithBackendReady() {
-  console.log('socket clear and ready callback');
-}
+// ########################### HELPERS
 
 function getTestDataForWorker(testSuites) {
   return testSuites[WORKER_TEST_SUITE_INDEX++];
@@ -91,10 +105,6 @@ function getTestDataForWorker(testSuites) {
 
 function isAnyTestWaiting(testSuites) {
   return testSuites.length > WORKER_TEST_SUITE_INDEX;
-}
-
-function isDataOutOfRange(testSuites) {
-  return testSuites[WORKER_TEST_SUITE_INDEX] === undefined;
 }
 
 function clean() {
@@ -113,19 +123,10 @@ function clean() {
   })
 }
 
-// Because long living server connections may block workers from disconnecting, it may be useful to send a message,
-// so application specific actions may be taken to close them. It also may be useful to implement a timeout,
-// killing a worker if the 'disconnect' event has not been emitted after some time.
-function killWorker(worker) {
-  return new Promise((resolve, _reject) => {
-    worker.disconnect()
-    setTimeout(() => {
-      worker.kill()
-      delete ACTIVE_WORKERS[worker.id];
-      console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
-      resolve()
-    }, 2000);
-  })
+// ########################### SOCKET COMUNICATION WITH FRONTEND
+
+function sendSocketWithBackendReady() {
+  console.log('socket clear and ready callback');
 }
 
 module.exports = {
