@@ -1,13 +1,50 @@
-const express = require("express");
-const app = express();
-const http = require("http");
+const cluster = require('cluster');
 
-app.use(express.static(__dirname + '/client'));
-app.get('*', (req, res) => res.sendFile(__dirname));
+if (cluster.isMaster) {
+  const mainWorker = require('./workers/main.worker.js')
+  mainWorker.startServer();
 
-const server = http.createServer(app);
+  const sortTests = require('./const/sort.const').test;
+  const testModule = require('./modules/test.module');
+  testModule.run(sortTests);
 
-const port = 3000;
-server.listen(port, () => {
-  console.log(`CLIENT LISTENING: http://localhost:${port}`)
-});
+} else {
+  const worker = require('./workers/worker.worker')
+  worker.init();
+}
+
+
+// const numCPUs = cpus().length;
+// if (cluster.isMaster) {
+//   for (let i = 0; i < 1; i++) {
+//     cluster.fork();
+//   }
+//   cluster.on('exit', function(worker, code, signal) {
+//     console.log('worker ' + worker.process.pid + ' died');
+//   });
+//   cluster.on('online', (worker, code, signal) => {
+//     worker.on('message', function(dd) {
+//       if (dd.event === 'memoryUsage') {
+//         console.log("Worker with ID: %d consumes %imb of memory", worker.id, dd.data.heapTotal / 1024 / 1024);
+//       }
+//     });
+//
+//   });
+//   console.log("Master consumes %imb of memory", process.memoryUsage().heapTotal / 1024 / 1024);
+// } else {
+//   // if (cluster.worker.id === 1) {
+//   process.send({
+//     event: 'memoryUsage',
+//     data: process.memoryUsage()
+//   });
+//
+//   // tutaj obliczenia
+//
+//   process.send({
+//     event: 'memoryUsage',
+//     data: process.memoryUsage()
+//   });
+// }
+
+
+
