@@ -13,7 +13,7 @@
   <form (submit)="$event.preventDefault(); runTest(+inputTestsNo.value, alghoritm.value)">
     <mat-form-field appearance="outline">
       <mat-label>Number of tests</mat-label>
-      <input matInput #inputTestsNo type="number" min="1" max="10" value="10" [disabled]="!isReady || isRunning" />
+      <input matInput #inputTestsNo type="number" min="1" max="10" value="1" [disabled]="!isReady || isRunning" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Algorithm</mat-label>

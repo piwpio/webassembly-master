@@ -5,6 +5,7 @@ const numCPUs = require('os').cpus().length;
 const WORKERS = [];
 const ACTIVE_WORKERS = {};
 let WORKER_TEST_SUITE_INDEX = 0;
+let RESULTS = [];
 let nextWorkerData = null;
 
 const run = (testSuites, _testData) => {
@@ -25,7 +26,7 @@ const run = (testSuites, _testData) => {
       if (msg.event === 'ready') {
         orReadyMessage(worker, workerTestData)
       } else if (msg.event === 'results') {
-        onResultsMessage(worker, testSuites);
+        onResultsMessage(worker, msg.data, testSuites);
       } else if (msg.event === 'memoryUsage') {
         onMemoryUsage(worker, msg.data)
       }
@@ -42,7 +43,8 @@ function orReadyMessage(worker, workerTestData) {
   });
 }
 
-function onResultsMessage(worker, testSuites) {
+function onResultsMessage(worker, data, testSuites) {
+  prepareResults(data);
   killWorker(worker).then(() => {
     if (isAnyTestWaiting(testSuites)) {
       // console.log('%d TESTS WAITING', testSuites.length - WORKER_TEST_SUITE_INDEX)
@@ -66,6 +68,19 @@ function onMemoryUsage(worker, data) {
   console.log("-----------");
 }
 
+function onExit(signal, code) {
+  if (signal) {
+    // console.log(`worker was killed by signal: ${signal}`);
+  } else if (code !== 0) {
+    // console.log(`worker exited with error code: ${code}`);
+    // clean().then(() => {
+    //   sendSocketWithBackendReady();
+    // })
+  } else {
+    // console.log('worker success!');
+  }
+}
+
 // ########################### WORKERS
 
 function addNewWorker() {
@@ -86,20 +101,23 @@ function killWorker(worker) {
   })
 }
 
-function onExit(signal, code) {
-  if (signal) {
-    // console.log(`worker was killed by signal: ${signal}`);
-  } else if (code !== 0) {
-    // console.log(`worker exited with error code: ${code}`);
-    // clean().then(() => {
-    //   sendSocketWithBackendReady();
-    // })
+// ########################### HELPERS
+function prepareResults(data) {
+  const p = data.performance.duration / 1000;
+  const m = data.memory.rss / 1024 / 1024;
+
+  if (RESULTS[data.testIndex] === undefined) {
+    RESULTS[data.testIndex] = {
+      testIndex: data.testIndex,
+      testLabel: data.testLabel,
+      performance: [p],
+      memory: [m]
+    }
   } else {
-    // console.log('worker success!');
+    RESULTS[data.testIndex].performance.push(p);
+    RESULTS[data.testIndex].memory.push(m);
   }
 }
-
-// ########################### HELPERS
 
 function getTestDataForWorker(testSuites) {
   return testSuites[WORKER_TEST_SUITE_INDEX++];
@@ -133,7 +151,9 @@ function clean() {
 // ########################### SOCKET COMUNICATION WITH FRONTEND
 
 function sendSocketWithBackendReady() {
-  console.log('socket clear and ready callback');
+  console.log(RESULTS);
+  RESULTS = [];
+  console.log('SEND SOCKET DATA');
 }
 
 module.exports = {

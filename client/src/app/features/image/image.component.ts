@@ -84,8 +84,14 @@ export class ImageComponent implements AfterViewInit, OnDestroy {
     this.allTestSuites.jsInvert = jsInvert;
     this.allTestSuites.jsSephia = jsSephia;
 
-    this.webassemblyService.initWasm('/assets/scripts/image/image.wasm').then((results) => {
+    const memory = new WebAssembly.Memory({
+      initial: 10,
+      maximum: 100,
+    });
+    this.webassemblyService.initWasm('/assets/scripts/image/image.wasm', { js: { mem: memory } }).then((results) => {
       this.wasmMemory = results.instance.exports.memory;
+      console.log(this.wasmMemory);
+      console.log(results);
 
       this.allTestSuites.wasmGrayscale = results.instance.exports.grayscale as ImageFunction;
       this.allTestSuites.wasmInvert = results.instance.exports.invert as ImageFunction;
