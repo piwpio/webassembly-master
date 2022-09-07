@@ -1,16 +1,18 @@
 const cluster = require('cluster');
 const {min} = require('mathjs');
 const numCPUs = require('os').cpus().length;
+
 const WORKERS = [];
 const ACTIVE_WORKERS = {};
 let WORKER_TEST_SUITE_INDEX = 0;
+let nextWorkerData = null;
 
 const run = (testSuites, _testData) => {
   WORKER_TEST_SUITE_INDEX = 0;
 
   // for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
   for (let i = 0; i < 2; i++) {
-    WORKERS.push(cluster.fork());
+    addNewWorker();
   }
 
   cluster.on('exit', function(worker, code, signal) {
@@ -18,18 +20,7 @@ const run = (testSuites, _testData) => {
   });
 
   cluster.on('online', (worker, _code, _signal) => {
-    ACTIVE_WORKERS[worker.id] = worker;
-    console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
-
-    if (isDataOutOfRange(testSuites)) {
-      killWorker(worker).then(() => {
-        delete ACTIVE_WORKERS[worker.id];
-        console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
-      });
-      return;
-    }
-
-    const workerTestData = getTestDataForWorker(testSuites);
+    const workerTestData = nextWorkerData ?? getTestDataForWorker(testSuites);
 
     worker.on('message', function (msg) {
       if (msg.event === 'ready') {
@@ -52,17 +43,25 @@ function orReadyMessage(worker, workerTestData) {
 
 function onResultsMessage(worker, testSuites) {
   killWorker(worker).then(() => {
-    delete ACTIVE_WORKERS[worker.id];
-    console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
     if (isAnyTestWaiting(testSuites)) {
       console.log('%d TESTS WAITING', testSuites.length - WORKER_TEST_SUITE_INDEX)
-      WORKERS.push(cluster.fork());
+      nextWorkerData = getTestDataForWorker(testSuites);
+      addNewWorker();
+
     } else if (Object.keys(ACTIVE_WORKERS).length === 0) {
+      console.log('clean');
       clean().then(() => {
+        nextWorkerData = null;
         sendSocketWithBackendReady();
       })
     }
   });
+}
+
+function addNewWorker() {
+  const worker = cluster.fork();
+  ACTIVE_WORKERS[worker.id] = worker;
+  console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
 }
 
 function onMemoryUsage(worker, data) {
@@ -122,6 +121,8 @@ function killWorker(worker) {
     worker.disconnect()
     setTimeout(() => {
       worker.kill()
+      delete ACTIVE_WORKERS[worker.id];
+      console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
       resolve()
     }, 2000);
   })
