@@ -10,8 +10,7 @@ let nextWorkerData = null;
 const run = (testSuites, _testData) => {
   WORKER_TEST_SUITE_INDEX = 0;
 
-  // for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
     addNewWorker();
   }
 
@@ -46,12 +45,10 @@ function orReadyMessage(worker, workerTestData) {
 function onResultsMessage(worker, testSuites) {
   killWorker(worker).then(() => {
     if (isAnyTestWaiting(testSuites)) {
-      console.log('%d TESTS WAITING', testSuites.length - WORKER_TEST_SUITE_INDEX)
+      // console.log('%d TESTS WAITING', testSuites.length - WORKER_TEST_SUITE_INDEX)
       nextWorkerData = getTestDataForWorker(testSuites);
       addNewWorker();
-
     } else if (Object.keys(ACTIVE_WORKERS).length === 0) {
-      console.log('clean');
       clean().then(() => {
         nextWorkerData = null;
         sendSocketWithBackendReady();
@@ -61,7 +58,12 @@ function onResultsMessage(worker, testSuites) {
 }
 
 function onMemoryUsage(worker, data) {
-  // console.log("Worker with ID: %d consumes %imb of memory", worker.id, data.rss / 1024 / 1024);
+  console.log("Worker with ID: %d consumes %imb of rss", worker.id, data.rss / 1024 / 1024);
+  console.log("Worker with ID: %d consumes %imb of heapTotal", worker.id, data.heapTotal / 1024 / 1024);
+  console.log("Worker with ID: %d consumes %imb of heapUsed", worker.id, data.heapUsed / 1024 / 1024);
+  console.log("Worker with ID: %d consumes %imb of external", worker.id, data.external / 1024 / 1024);
+  console.log("Worker with ID: %d consumes %imb of arrayBuffers", worker.id, data.arrayBuffers / 1024 / 1024);
+  console.log("-----------");
 }
 
 // ########################### WORKERS
@@ -76,9 +78,9 @@ function killWorker(worker) {
   return new Promise((resolve, _reject) => {
     worker.disconnect()
     setTimeout(() => {
-      worker.kill()
+      worker.kill();
       delete ACTIVE_WORKERS[worker.id];
-      console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
+      // console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
       resolve()
     }, 2000);
   })
@@ -88,10 +90,10 @@ function onExit(signal, code) {
   if (signal) {
     // console.log(`worker was killed by signal: ${signal}`);
   } else if (code !== 0) {
-    console.log(`worker exited with error code: ${code}`);
-    clean().then(() => {
-      sendSocketWithBackendReady();
-    })
+    // console.log(`worker exited with error code: ${code}`);
+    // clean().then(() => {
+    //   sendSocketWithBackendReady();
+    // })
   } else {
     // console.log('worker success!');
   }
@@ -110,6 +112,11 @@ function isAnyTestWaiting(testSuites) {
 function clean() {
   return new Promise((resolve, _reject) => {
     const workersToClean = Object.entries(WORKERS)
+    if (!workersToClean.length) {
+      resolve();
+      return;
+    }
+
     const workersLength = workersToClean.length;
     let workersKilled = 0;
     for (let [_workerId, worker] of workersToClean) {
