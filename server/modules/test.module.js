@@ -1,21 +1,35 @@
 const cluster = require('cluster');
 const {min} = require('mathjs');
 const numCPUs = require('os').cpus().length;
-const _workers = []; //workerId => worker
-let _workerTestSuiteIndex = 0;
+const WORKERS = [];
+const ACTIVE_WORKERS = {};
+let WORKER_TEST_SUITE_INDEX = 0;
 
 const run = (testSuites, _testData) => {
-  for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
-    _workers.push(cluster.fork());
+  WORKER_TEST_SUITE_INDEX = 0;
+
+  // for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
+  for (let i = 0; i < 2; i++) {
+    WORKERS.push(cluster.fork());
   }
 
-  cluster.on('exit', function(worker, _code, _signal) {
-    console.log('worker ' + worker.process.pid + ' died');
-
+  cluster.on('exit', function(worker, code, signal) {
+    onExit(signal, code);
   });
 
   cluster.on('online', (worker, _code, _signal) => {
-    const workerTestData = getTestDataForWorker(testSuites)
+    ACTIVE_WORKERS[worker.id] = worker;
+    console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
+
+    if (isDataOutOfRange(testSuites)) {
+      killWorker(worker).then(() => {
+        delete ACTIVE_WORKERS[worker.id];
+        console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
+      });
+      return;
+    }
+
+    const workerTestData = getTestDataForWorker(testSuites);
 
     worker.on('message', function (msg) {
       if (msg.event === 'ready') {
@@ -38,29 +52,66 @@ function orReadyMessage(worker, workerTestData) {
 
 function onResultsMessage(worker, testSuites) {
   killWorker(worker).then(() => {
-    if (checkIfAnyTestWaiting(testSuites)) {
-      console.log('%d tests waiting', testSuites.length - _workerTestSuiteIndex)
-      _workers.push(cluster.fork());
+    delete ACTIVE_WORKERS[worker.id];
+    console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
+    if (isAnyTestWaiting(testSuites)) {
+      console.log('%d TESTS WAITING', testSuites.length - WORKER_TEST_SUITE_INDEX)
+      WORKERS.push(cluster.fork());
+    } else if (Object.keys(ACTIVE_WORKERS).length === 0) {
+      clean().then(() => {
+        sendSocketWithBackendReady();
+      })
     }
-  })
+  });
 }
 
 function onMemoryUsage(worker, data) {
-  console.log("Worker with ID: %d consumes %imb of memory", worker.id, data.rss / 1024 / 1024);
+  // console.log("Worker with ID: %d consumes %imb of memory", worker.id, data.rss / 1024 / 1024);
+}
+
+function onExit(signal, code) {
+  if (signal) {
+    // console.log(`worker was killed by signal: ${signal}`);
+  } else if (code !== 0) {
+    console.log(`worker exited with error code: ${code}`);
+    clean().then(() => {
+      sendSocketWithBackendReady();
+    })
+  } else {
+    // console.log('worker success!');
+  }
+}
+
+function sendSocketWithBackendReady() {
+  console.log('socket clear and ready callback');
 }
 
 function getTestDataForWorker(testSuites) {
-  return testSuites[_workerTestSuiteIndex++];
+  return testSuites[WORKER_TEST_SUITE_INDEX++];
 }
 
-function checkIfAnyTestWaiting(testSuites) {
-  return testSuites.length >  _workerTestSuiteIndex;
+function isAnyTestWaiting(testSuites) {
+  return testSuites.length > WORKER_TEST_SUITE_INDEX;
+}
+
+function isDataOutOfRange(testSuites) {
+  return testSuites[WORKER_TEST_SUITE_INDEX] === undefined;
 }
 
 function clean() {
-  for (let worker of _workers) {
-    killWorker(worker).then()
-  }
+  return new Promise((resolve, _reject) => {
+    const workersToClean = Object.entries(WORKERS)
+    const workersLength = workersToClean.length;
+    let workersKilled = 0;
+    for (let [_workerId, worker] of workersToClean) {
+      killWorker(worker).then(() => {
+        ++workersKilled;
+        if (workersLength === workersKilled) {
+          resolve();
+        }
+      })
+    }
+  })
 }
 
 // Because long living server connections may block workers from disconnecting, it may be useful to send a message,
@@ -70,8 +121,8 @@ function killWorker(worker) {
   return new Promise((resolve, _reject) => {
     worker.disconnect()
     setTimeout(() => {
-        worker.kill()
-        resolve()
+      worker.kill()
+      resolve()
     }, 2000);
   })
 }
