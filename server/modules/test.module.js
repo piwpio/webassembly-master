@@ -11,7 +11,8 @@ let nextWorkerData = null;
 const run = (testSuites, _testData) => {
   WORKER_TEST_SUITE_INDEX = 0;
 
-  for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
+  // for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
+  for (let i = 0; i < min(1, testSuites.length); i++) {
     addNewWorker();
   }
 

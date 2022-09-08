@@ -5,7 +5,7 @@ const init = () => {
     if (msg.event === 'runTest') {
       // sendMemoryUsage()
       // const data = generateSortFeed(2000000);
-      const data = generateSortFeed(10000000);
+      const data = generateSortFeed(100000);
 
       performance.mark("start")
       if (msg.data.isWasm) {
