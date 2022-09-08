@@ -24,8 +24,8 @@ function run(testType, testSuites, testData) {
   WORKER_TEST_SUITE_INDEX = 0;
   RESULTS = [];
 
-  // for (let i = 0; i < min(numCPUs, TEST_SUITES.length); i++) {
-  for (let i = 0; i < min(1, TEST_SUITES.length); i++) {
+  for (let i = 0; i < min(numCPUs, TEST_SUITES.length); i++) {
+  // for (let i = 0; i < min(1, TEST_SUITES.length); i++) {
     addNewWorker();
   }
 }

@@ -13,7 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SortAllResults, SortChartBlockResults, SortTablePreparedResults, SortTests } from '@features/sort/sort.model';
 import { ChartBarsData } from '@models/charts.model';
 import { ResultType } from '@models/common.model';
-import { getAverage, getFastest, getMedian, getSlowest } from '@services/utils';
+import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
 
 @Component({
   selector: 'app-base-server-test',
@@ -24,6 +24,7 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   isRunning = false;
 
   tableDisplayedColumns = null;
+  tableDisplayedColumnsWithTestNo = null;
   tablePreparedResults = null;
   chartBlockResults = null;
   chartBarsResults = null;
@@ -62,7 +63,6 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log('AAA');
     this.socketService.emitGetStatus();
   }
 
@@ -77,6 +77,7 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
     const testData = this.getTestData();
     if (testData) {
       this.tableDisplayedColumns = null;
+      this.tableDisplayedColumnsWithTestNo = null;
       this.tablePreparedResults = null;
       this.allResults = null;
       this.chartBarsResults = null;
@@ -91,21 +92,11 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   }
 
   private prepareResults(results: TestResults[]): void {
-    // [
-    //   memory:[39.296875]
-    //   performance:[0.042059286000207065]
-    //   testIndex:0
-    //   testLabel:"WASM std::sort"
-    // ]
-    console.log(results);
-
     for (const r of results) {
       if (!r) continue;
 
-      if (!this.tableDisplayedColumns) {
-        this.tableDisplayedColumns = [];
-      }
-      this.tableDisplayedColumns.push(r.testIndex);
+      r.memory = r.memory.map((m) => round2(m));
+      r.performance = r.performance.map((m) => round2(m));
 
       if (!this.allResults) {
         this.allResults = {
@@ -171,8 +162,37 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
         name: `Median ${r.testLabel}`,
         value: getMedian(r.performance),
       });
-    }
 
-    console.log(this.chartBlockResults);
+      if (!this.tableDisplayedColumns) {
+        this.tableDisplayedColumns = [];
+        this.tableDisplayedColumnsWithTestNo = ['testNo'];
+      }
+      this.tableDisplayedColumns.push(r.testLabel);
+      this.tableDisplayedColumnsWithTestNo.push(r.testLabel);
+
+      if (!this.tablePreparedResults) {
+        this.tablePreparedResults = {
+          memory: [],
+          performance: [],
+        };
+        for (let i = 0; i < r.memory.length; i++) {
+          this.tablePreparedResults.memory.push({
+            testNo: i,
+          });
+        }
+        for (let j = 0; j < r.performance.length; j++) {
+          this.tablePreparedResults.performance.push({
+            testNo: j,
+          });
+        }
+      }
+
+      for (let i = 0; i < r.memory.length; i++) {
+        this.tablePreparedResults.memory[i][r.testLabel] = r.memory[i];
+      }
+      for (let i = 0; i < r.performance.length; i++) {
+        this.tablePreparedResults.performance[i][r.testLabel] = r.performance[i];
+      }
+    }
   }
 }
