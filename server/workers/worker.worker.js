@@ -1,17 +1,10 @@
 const {generateSortFeed} = require('../utils');
 const { performance } = require("perf_hooks")
 
-let testStartTime;
-let testEndTime;
 const init = () => {
   process.on('message', function(msg) {
     if (msg.event === 'runTest') {
-      // sendMemoryUsage()
-      // const data = generateSortFeed(2000000);
       const data = msg.data;
-      testStartTime = testEndTime = 0;
-      testStartTime = performance.now()
-
       if (data.testSuite.isWasm) {
         runWasm(data.testType, data.testSuite, data.testData);
       } else {
@@ -34,6 +27,7 @@ function runWasm(testType, testSuite, testData) {
   WebAssembly.instantiate(wasmBuffer, { env: { memory: memory }}).then(wasmModule => {
     const test = wasmModule.instance.exports[testSuite.method];
     // const memory = wasmModule.instance.exports.memory;
+    const testStartTime = performance.now();
 
     if (testType === 'sort') {
       const array = new Float32Array(memory.buffer, 0, testData.length);
@@ -41,7 +35,7 @@ function runWasm(testType, testSuite, testData) {
       test(array, array.byteOffset, array.length - 1);
     }
 
-    testEndTime = performance.now()
+    const testEndTime = performance.now();
     const m = process.memoryUsage();
     const p = testEndTime - testStartTime;
     sendResults(m, p, testSuite.testIndex, testSuite.testLabel);
@@ -50,12 +44,13 @@ function runWasm(testType, testSuite, testData) {
 
 function runJs(testType, testSuite, testData) {
   const test = require(`../scripts/${testSuite.script}`)[testSuite.method];
+  const testStartTime = performance.now()
 
   if (testType === 'sort') {
     test(testData, 0, testData.length - 1);
   }
 
-  testEndTime = performance.now()
+  const testEndTime = performance.now()
   const m = process.memoryUsage();
   const p = testEndTime - testStartTime;
 

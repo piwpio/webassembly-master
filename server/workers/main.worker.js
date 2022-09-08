@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
-const {run, getTestWorkerStatus} = require('../modules/test.module');
+const testModule = require('../modules/test.module');
 
 const startServer = () => {
   const app = express();
@@ -47,8 +47,8 @@ function socketOnStatus(socket) {
 }
 
 function socketOnNewTest(data) {
-  const {testType, testSuites, clientData} = getTestSuites(data)
-  run(testType, testSuites, clientData)
+  const {testType, testSuites, clientData} = getTestSuites(data);
+  testModule.run(testType, testSuites, clientData);
 }
 
 // ########################### HELPERS
@@ -77,7 +77,7 @@ function getTestSuites(data) {
 }
 
 function getStatus() {
-  return getTestWorkerStatus();
+  return testModule.getTestWorkerStatus();
 }
 
 module.exports = {

@@ -8,58 +8,82 @@ let WORKER_TEST_SUITE_INDEX = 0;
 let RESULTS = [];
 let IS_READY = true;
 let NEXT_WORKER_TEST_SUITE = null;
+let TEST_TYPE = null;
+let TEST_SUITES = null;
+let TEST_DATA = null;
 
 const run = (testType, testSuites, testData) => {
   if (!IS_READY) {
     return;
   }
+  IS_READY = false;
+  TEST_TYPE = testType;
+  TEST_SUITES = testSuites;
+  TEST_DATA = testData;
   WORKER_TEST_SUITE_INDEX = 0;
   RESULTS = [];
-  IS_READY = false;
 
-  // for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
-  for (let i = 0; i < min(1, testSuites.length); i++) {
+  // for (let i = 0; i < min(numCPUs, TEST_SUITES.length); i++) {
+  for (let i = 0; i < min(1, TEST_SUITES.length); i++) {
     addNewWorker();
   }
+}
 
-  cluster.on('exit', function(worker, code, signal) {
-    onExit(signal, code);
-  });
+// ########################### WORKERS
 
-  cluster.on('online', (worker) => {
-    const workerTestSuite = NEXT_WORKER_TEST_SUITE ?? getTestSuiteForWorker(testSuites);
+function addNewWorker() {
+  const worker = cluster.fork();
+  ACTIVE_WORKERS[worker.id] = worker;
+  worker.on('online', ()=> {
+    console.log('WORKER IS ONLINE', worker.id);
 
+    const workerTestSuite = NEXT_WORKER_TEST_SUITE ?? getTestSuiteForWorker();
     worker.on('message', function (msg) {
       if (msg.event === 'ready') {
-        orReadyMessage(worker, testType, workerTestSuite, testData)
+        orReadyMessage(worker, workerTestSuite)
       } else if (msg.event === 'results') {
-        onResultsMessage(worker, msg.data, testSuites);
+        onResultsMessage(worker, msg.data);
       } else if (msg.event === 'memoryUsage') {
         onMemoryUsage(worker, msg.data)
       }
     });
+  })
+
+  worker.on('exit', function(code, signal) {
+    onExit(signal, code);
   });
+  // console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
+}
+
+function killWorker(worker) {
+  return new Promise((resolve, _reject) => {
+    worker.disconnect()
+    setTimeout(() => {
+      delete ACTIVE_WORKERS[worker.id];
+      resolve();
+    }, 1000);
+  })
 }
 
 // ########################### MESSAGE CALLBACKS
 
-function orReadyMessage(worker, testType, testSuite, testData) {
+function orReadyMessage(worker, testSuite) {
   worker.send({
     event: 'runTest',
     data: {
-      testType,
-      testSuite,
-      testData
+      testType: TEST_TYPE,
+      testSuite: testSuite,
+      testData: TEST_DATA
     }
   });
 }
 
-function onResultsMessage(worker, data, testSuites) {
+function onResultsMessage(worker, data) {
   prepareResults(data);
   killWorker(worker).then(() => {
-    if (isAnyTestWaiting(testSuites)) {
-      // console.log('%d TESTS WAITING', testSuites.length - WORKER_TEST_SUITE_INDEX)
-      NEXT_WORKER_TEST_SUITE = getTestSuiteForWorker(testSuites);
+    if (isAnyTestWaiting(TEST_SUITES)) {
+      // console.log('%d TESTS WAITING', TEST_SUITES.length - WORKER_TEST_SUITE_INDEX)
+      NEXT_WORKER_TEST_SUITE = getTestSuiteForWorker(TEST_SUITES);
       addNewWorker();
     } else if (Object.keys(ACTIVE_WORKERS).length === 0) {
       clean().then(() => {
@@ -81,35 +105,15 @@ function onMemoryUsage(worker, data) {
 
 function onExit(signal, code) {
   if (signal) {
-    // console.log(`worker was killed by signal: ${signal}`);
+    console.log(`worker was killed by signal: ${signal}`);
   } else if (code !== 0) {
-    // console.log(`worker exited with error code: ${code}`);
+    console.log(`worker exited with error code: ${code}`);
     // clean().then(() => {
     //   sendSocketWithBackendReady();
     // })
   } else {
-    // console.log('worker success!');
+    console.log('worker success!');
   }
-}
-
-// ########################### WORKERS
-
-function addNewWorker() {
-  const worker = cluster.fork();
-  ACTIVE_WORKERS[worker.id] = worker;
-  // console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
-}
-
-function killWorker(worker) {
-  return new Promise((resolve, _reject) => {
-    worker.disconnect()
-    setTimeout(() => {
-      worker.kill();
-      delete ACTIVE_WORKERS[worker.id];
-      // console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS killed')
-      resolve()
-    }, 2000);
-  })
 }
 
 // ########################### HELPERS
@@ -130,12 +134,12 @@ function prepareResults(data) {
   }
 }
 
-function getTestSuiteForWorker(testSuites) {
-  return testSuites[WORKER_TEST_SUITE_INDEX++];
+function getTestSuiteForWorker() {
+  return TEST_SUITES[WORKER_TEST_SUITE_INDEX++];
 }
 
-function isAnyTestWaiting(testSuites) {
-  return testSuites.length > WORKER_TEST_SUITE_INDEX;
+function isAnyTestWaiting() {
+  return TEST_SUITES.length > WORKER_TEST_SUITE_INDEX;
 }
 
 function clean() {
@@ -164,7 +168,10 @@ function clean() {
 function sendSocketWithBackendReady() {
   // console.log(RESULTS);
   IS_READY = true;
-  // console.log('SEND SOCKET DATA');
+  TEST_TYPE = null;
+  TEST_SUITES = null;
+  TEST_DATA = null;
+  WORKER_TEST_SUITE_INDEX = 0;
   console.log('###########################');
 }
 

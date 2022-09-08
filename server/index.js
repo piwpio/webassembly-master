@@ -1,6 +1,6 @@
 const cluster = require('cluster');
 
-if (cluster.isMaster) {
+if (cluster.isPrimary) {
   const mainWorker = require('./workers/main.worker.js')
   mainWorker.startServer();
 } else {
@@ -8,38 +8,29 @@ if (cluster.isMaster) {
   worker.init();
 }
 
-
-// const numCPUs = cpus().length;
-// if (cluster.isMaster) {
-//   for (let i = 0; i < 1; i++) {
-//     cluster.fork();
-//   }
-//   cluster.on('exit', function(worker, code, signal) {
-//     console.log('worker ' + worker.process.pid + ' died');
-//   });
-//   cluster.on('online', (worker, code, signal) => {
-//     worker.on('message', function(dd) {
-//       if (dd.event === 'memoryUsage') {
-//         console.log("Worker with ID: %d consumes %imb of memory", worker.id, dd.data.heapTotal / 1024 / 1024);
-//       }
-//     });
+// TODO report to nodeJs - multiple online events for single worker
+// cluster.on('exit', function(worker, code, signal) {
+//   console.log(cluster.workers);
+//   console.log('worker ' + worker.process.pid + ' died');
+//   // onExit(signal, code);
+// });
 //
-//   });
-//   console.log("Master consumes %imb of memory", process.memoryUsage().heapTotal / 1024 / 1024);
-// } else {
-//   // if (cluster.worker.id === 1) {
-//   process.send({
-//     event: 'memoryUsage',
-//     data: process.memoryUsage()
-//   });
+// cluster.on('online', (worker) => {
+//   console.log(Object.keys(cluster.workers));
+//   console.log('WORKER IS ONLINE', worker.id);
 //
-//   // tutaj obliczenia
+//   setTimeout(() => {
+//     killWorker(worker).then(() => IS_READY = true)
+//   }, 2000)
 //
-//   process.send({
-//     event: 'memoryUsage',
-//     data: process.memoryUsage()
-//   });
-// }
-
-
-
+//   // const workerTestSuite = NEXT_WORKER_TEST_SUITE ?? getTestSuiteForWorker(testSuites);
+//   // worker.on('message', function (msg) {
+//   //   if (msg.event === 'ready') {
+//   //     orReadyMessage(worker, testType, workerTestSuite, testData)
+//   //   } else if (msg.event === 'results') {
+//   //     onResultsMessage(worker, msg.data, testSuites);
+//   //   } else if (msg.event === 'memoryUsage') {
+//   //     onMemoryUsage(worker, msg.data)
+//   //   }
+//   // });
+// });
