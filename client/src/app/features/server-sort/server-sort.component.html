@@ -1,6 +1,3 @@
-<div>
-  Server is Ready for next test: <span>{{ isReadyForNextTest }}</span>
-</div>
 <div class="form__container">
   <div>
     <mat-form-field appearance="outline">
@@ -37,3 +34,5 @@
     </button>
   </div>
 </div>
+
+<app-results [isRunning]="isRunning" [chartBarsResults]="chartBarsResults"></app-results>

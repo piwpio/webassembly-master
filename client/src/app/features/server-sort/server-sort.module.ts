@@ -7,6 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ResultsModule } from '@components/results/results.module';
 
 const routes: Routes = [
   {
@@ -25,6 +27,8 @@ const routes: Routes = [
     MatInputModule,
     FormsModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
+    ResultsModule,
   ],
 })
 export class ServerSortModule {}

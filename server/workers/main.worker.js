@@ -3,6 +3,8 @@ const http = require('http');
 const path = require('path');
 const testModule = require('../modules/test.module');
 
+let MAIN_SOCKET = null;
+
 const startServer = () => {
   const app = express();
 
@@ -23,14 +25,18 @@ const startServer = () => {
     },
     maxHttpBufferSize: 1e9
   });
+
+
   sio.sockets.on('connection', socket =>  {
+    MAIN_SOCKET = socket;
+    testModule.setSocket(MAIN_SOCKET);
     socket.on('msg', msg => {
       if (msg.event === 'status') {
-        socketOnStatus(socket);
+        socketOnStatus();
       } else if (msg.event === 'newTest') {
-        socketOnNewTest(msg.data)
+        socketOnNewTest(msg.data);
+        socketOnStatus(msg.data.testType);
       }
-
     });
   });
   console.log("SOCKETS LISTENING");
@@ -38,12 +44,15 @@ const startServer = () => {
 
 // ########################### SOCKET CALLBACKS
 
-function socketOnStatus(socket) {
+function socketOnStatus(testType) {
   const socketMsg = {
     event: 'status',
     data: getStatus()
   }
-  socket.emit('msg', socketMsg);
+  if (testType) {
+    socketMsg.data['testType'] = testType;
+  }
+  MAIN_SOCKET.emit('msg', socketMsg);
 }
 
 function socketOnNewTest(data) {

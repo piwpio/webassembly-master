@@ -11,8 +11,9 @@ let NEXT_WORKER_TEST_SUITE = null;
 let TEST_TYPE = null;
 let TEST_SUITES = null;
 let TEST_DATA = null;
+let MAIN_SOCKET = null;
 
-const run = (testType, testSuites, testData) => {
+function run(testType, testSuites, testData) {
   if (!IS_READY) {
     return;
   }
@@ -118,7 +119,7 @@ function onExit(signal, code) {
 
 // ########################### HELPERS
 function prepareResults(data) {
-  const p = data.performance / 1000;
+  const p = data.performance;
   const m = data.memory.rss / 1024 / 1024;
 
   if (RESULTS[data.testIndex] === undefined) {
@@ -165,21 +166,27 @@ function clean() {
 
 // ########################### SOCKET COMUNICATION WITH FRONTEND
 
+function setSocket(socket) {
+  MAIN_SOCKET = socket;
+}
 function sendSocketWithBackendReady() {
   // console.log(RESULTS);
   IS_READY = true;
-  TEST_TYPE = null;
-  TEST_SUITES = null;
-  TEST_DATA = null;
-  WORKER_TEST_SUITE_INDEX = 0;
-  console.log('###########################');
+
+
+  const socketMsg = {
+    event: 'status',
+    data: getTestWorkerStatus()
+  }
+  MAIN_SOCKET.emit('msg', socketMsg);
 }
 
 function getTestWorkerStatus() {
   const status = {
     isReady: IS_READY,
   };
-  if (IS_READY?.length) {
+  if (RESULTS.length) {
+    status['testType'] = TEST_TYPE;
     status['testResults'] = RESULTS
   }
   return status;
@@ -187,5 +194,6 @@ function getTestWorkerStatus() {
 
 module.exports = {
   run,
+  setSocket,
   getTestWorkerStatus
 }

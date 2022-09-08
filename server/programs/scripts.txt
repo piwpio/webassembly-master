@@ -11,7 +11,7 @@ em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/image.cpp -o ~/
 //server
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/sort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/sort.wasm --no-entry -s TOTAL_MEMORY=128mb
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/sort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/sort.wasm --no-entry -s IMPORTED_MEMORY=1
-em++ -O4 ~/Dropbox/Magisterka/webassembly-master/server/programs/sort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/sort.wasm --no-entry -s IMPORTED_MEMORY=1 -s ALLOW_MEMORY_GROWTH=1
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/sort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/sort.wasm --no-entry -s IMPORTED_MEMORY=1 -s ALLOW_MEMORY_GROWTH=1
 em++ -O1 ~/Dropbox/Magisterka/webassembly-master/server/programs/sort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/sort.wasm --no-entry -s IMPORTED_MEMORY=1 -s ALLOW_MEMORY_GROWTH=1
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/sort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/sort.wasm --no-entry -sWASM=0
 

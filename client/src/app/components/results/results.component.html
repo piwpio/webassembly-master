@@ -1,0 +1,70 @@
+<div class="loading-container" *ngIf="isRunning">
+  <mat-spinner [diameter]="32"></mat-spinner>
+</div>
+
+<!--<div class="no-results-container" *ngIf="!isRunning && tablePreparedResults?.length === 0">No results</div>-->
+
+<div class="results-container" *ngIf="!isRunning && chartBarsResults">
+  <ng-container *ngFor="let param of ['performance', 'memory']">
+    <!--    <table mat-table [dataSource]="tablePreparedResults" class="mat-elevation-z2">-->
+    <!--      <ng-container matColumnDef="testNo">-->
+    <!--        <th mat-header-cell *matHeaderCellDef>Test No.</th>-->
+    <!--        <td mat-cell *matCellDef="let element">{{ element.testNo + 1 }}.</td>-->
+    <!--      </ng-container>-->
+    <!--      <ng-container matColumnDef="js">-->
+    <!--        <th mat-header-cell *matHeaderCellDef>JS Native</th>-->
+    <!--        <td mat-cell [class]="getRowClass(element.js, allResults.combined)" *matCellDef="let element">-->
+    <!--          {{ element.js }}ms-->
+    <!--        </td>-->
+    <!--      </ng-container>-->
+    <!--      <ng-container matColumnDef="jsMath">-->
+    <!--        <th mat-header-cell *matHeaderCellDef>JS Math.js</th>-->
+    <!--        <td mat-cell [class]="getRowClass(element.jsMath, allResults.combined)" *matCellDef="let element">-->
+    <!--          {{ element.jsMath }}ms-->
+    <!--        </td>-->
+    <!--      </ng-container>-->
+    <!--      <ng-container matColumnDef="jsQs">-->
+    <!--        <th mat-header-cell *matHeaderCellDef>JS QuickSort</th>-->
+    <!--        <td mat-cell [class]="getRowClass(element.jsQs, allResults.combined)" *matCellDef="let element">-->
+    <!--          {{ element.jsQs }}ms-->
+    <!--        </td>-->
+    <!--      </ng-container>-->
+    <!--      <ng-container matColumnDef="wasmQs">-->
+    <!--        <th mat-header-cell *matHeaderCellDef>WASM QuickSort</th>-->
+    <!--        <td mat-cell [class]="getRowClass(element.wasmQs, allResults.combined)" *matCellDef="let element">-->
+    <!--          {{ element.wasmQs }}ms-->
+    <!--        </td>-->
+    <!--      </ng-container>-->
+    <!--      <ng-container matColumnDef="wasmStd">-->
+    <!--        <th mat-header-cell *matHeaderCellDef>WASM std::sort</th>-->
+    <!--        <td mat-cell [class]="getRowClass(element.wasmStd, allResults.combined)" *matCellDef="let element">-->
+    <!--          {{ element.wasmStd }}ms-->
+    <!--        </td>-->
+    <!--      </ng-container>-->
+
+    <!--      <tr mat-header-row *matHeaderRowDef="tableDisplayedColumns"></tr>-->
+    <!--      <tr mat-row *matRowDef="let row; columns: tableDisplayedColumns"></tr>-->
+    <!--    </table>-->
+
+    <div class="charts__container">
+      <div class="chart__container--bar">
+        <ngx-charts-bar-vertical-2d
+          [results]="chartBarsResults[param]"
+          [legend]="true"
+          [yAxisLabel]="param === 'performance' ? 'time [ms]' : 'size [MB]'"
+          [showYAxisLabel]="true"
+          [xAxis]="true"
+          [yAxis]="true"
+        ></ngx-charts-bar-vertical-2d>
+      </div>
+
+      <!--      <div class="chart__container&#45;&#45;card">-->
+      <!--        <ngx-charts-number-card-->
+      <!--          *ngFor="let data of sortTests"-->
+      <!--          [results]="chartBlockResults[data]"-->
+      <!--          [cardColor]="'#000'"-->
+      <!--        ></ngx-charts-number-card>-->
+      <!--      </div>-->
+    </div>
+  </ng-container>
+</div>

@@ -1,10 +1,19 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SocketService } from '@services/socket.service';
-import { SocketMessageStatus, SocketMessageTestData, SocketMessageTestType } from '@models/server-data.model';
+import {
+  SocketMessageStatus,
+  SocketMessageTestData,
+  SocketMessageTestType,
+  TestResults,
+} from '@models/server-data.model';
 import { ServerReadyService } from '@services/server-ready.service';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SortAllResults, SortChartBlockResults, SortTablePreparedResults, SortTests } from '@features/sort/sort.model';
+import { ChartBarsData } from '@models/charts.model';
+import { ResultType } from '@models/common.model';
+import { getAverage, getFastest, getMedian, getSlowest } from '@services/utils';
 
 @Component({
   selector: 'app-base-server-test',
@@ -12,6 +21,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   testType: SocketMessageTestType;
   isReadyForNextTest = false;
+  isRunning = false;
+
+  tableDisplayedColumns: string[] = ['testNo', ...SortTests];
+  tablePreparedResults: SortTablePreparedResults[] = null;
+  chartBlockResults: SortChartBlockResults = null;
+  chartBarsResults = null;
+  allResults = null;
 
   private $destroy: Subject<boolean> = new Subject<boolean>();
 
@@ -38,10 +54,15 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       )
       .subscribe((payload) => {
         console.log(payload);
+        this.isRunning = !payload.isReady;
+        if (payload.testResults) {
+          this.prepareResults(payload.testResults);
+        }
       });
   }
 
   ngOnInit(): void {
+    console.log('AAA');
     this.socketService.emitGetStatus();
   }
 
@@ -55,6 +76,8 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   runTest(): void {
     const testData = this.getTestData();
     if (testData) {
+      this.allResults = null;
+      this.chartBarsResults = null;
       this.socketService.emitNewTest(testData);
     }
   }
@@ -62,5 +85,54 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   private setIsReadyForNextTest(isReady: boolean): void {
     this.isReadyForNextTest = isReady;
     this.chRef.markForCheck();
+  }
+
+  private prepareResults(results: TestResults[]): void {
+    // [
+    //   memory:[39.296875]
+    //   performance:[0.042059286000207065]
+    //   testIndex:0
+    //   testLabel:"WASM std::sort"
+    // ]
+    console.log(results);
+
+    for (const r of results) {
+      if (!this.allResults) {
+        this.allResults = {
+          memory: { combined: [] },
+          performance: { combined: [] },
+        };
+      }
+      this.allResults.memory.combined = [...this.allResults.memory.combined, ...r.memory];
+      this.allResults.performance.combined = [...this.allResults.performance.combined, ...r.performance];
+
+      if (!this.chartBarsResults) {
+        this.chartBarsResults = {
+          memory: [
+            { name: 'Best', series: [] },
+            { name: 'Worst', series: [] },
+            { name: 'Average', series: [] },
+            { name: 'Median', series: [] },
+          ],
+          performance: [
+            { name: 'Best', series: [] },
+            { name: 'Worst', series: [] },
+            { name: 'Average', series: [] },
+            { name: 'Median', series: [] },
+          ],
+        };
+      }
+
+      this.chartBarsResults.memory[0].series.push({ name: r.testLabel, value: getFastest(r.memory) });
+      this.chartBarsResults.memory[1].series.push({ name: r.testLabel, value: getSlowest(r.memory) });
+      this.chartBarsResults.memory[2].series.push({ name: r.testLabel, value: getAverage(r.memory) });
+      this.chartBarsResults.memory[3].series.push({ name: r.testLabel, value: getMedian(r.memory) });
+      this.chartBarsResults.performance[0].series.push({ name: r.testLabel, value: getFastest(r.performance) });
+      this.chartBarsResults.performance[1].series.push({ name: r.testLabel, value: getSlowest(r.performance) });
+      this.chartBarsResults.performance[2].series.push({ name: r.testLabel, value: getAverage(r.performance) });
+      this.chartBarsResults.performance[3].series.push({ name: r.testLabel, value: getMedian(r.performance) });
+    }
+
+    console.log(this.chartBarsResults);
   }
 }
