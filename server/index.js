@@ -5,8 +5,7 @@ if (cluster.isMaster) {
   mainWorker.startServer();
 
   const sortTests = require('./const/sort.const').test;
-  const testModule = require('./modules/test.module');
-  testModule.run(sortTests);
+  // testModule.run(sortTests);
 
 } else {
   const worker = require('./workers/worker.worker')

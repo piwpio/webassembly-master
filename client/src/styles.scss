@@ -15,6 +15,12 @@ body {
   justify-content: center;
   align-items: center;
 
+  & > div > * {
+    &:not(:first-child) {
+      margin-left: 10px;
+    }
+  }
+
   form > * {
     &:not(:first-child) {
       margin-left: 10px;

@@ -24,6 +24,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/sort/sort.module').then((m) => m.SortModule),
   },
   {
+    path: 'server-sort',
+    loadChildren: () => import('./features/server-sort/server-sort.module').then((m) => m.ServerSortModule),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

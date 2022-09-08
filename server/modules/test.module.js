@@ -6,10 +6,13 @@ const WORKERS = [];
 const ACTIVE_WORKERS = {};
 let WORKER_TEST_SUITE_INDEX = 0;
 let RESULTS = [];
+let IS_READY = true;
 let nextWorkerData = null;
 
 const run = (testSuites, _testData) => {
   WORKER_TEST_SUITE_INDEX = 0;
+  RESULTS = [];
+  IS_READY = false;
 
   // for (let i = 0; i < min(numCPUs, testSuites.length); i++) {
   for (let i = 0; i < min(1, testSuites.length); i++) {
@@ -153,11 +156,21 @@ function clean() {
 
 function sendSocketWithBackendReady() {
   console.log(RESULTS);
-  RESULTS = [];
+  IS_READY = true;
   console.log('SEND SOCKET DATA');
+}
+
+function getTestWorkerStatus() {
+  const status = {
+    isReady: IS_READY,
+  };
+  if (IS_READY?.length) {
+    status['testResults'] = RESULTS
+  }
+  return status;
 }
 
 module.exports = {
   run,
-  clean
+  getTestWorkerStatus
 }

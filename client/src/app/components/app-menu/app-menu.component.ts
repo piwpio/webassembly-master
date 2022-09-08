@@ -12,6 +12,7 @@ const ROUTES: AppMenu[] = [
   { label: '3D cube', url: '/3dtest' },
   { label: 'Image processing', url: '/image' },
   { label: 'Array sorting', url: '/sort' },
+  { label: 'Server array sorting', url: '/server-sort' },
 ];
 
 @Component({
