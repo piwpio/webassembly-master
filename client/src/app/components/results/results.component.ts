@@ -8,5 +8,6 @@ import { Component, Input } from '@angular/core';
 export class ResultsComponent {
   @Input() isRunning: boolean;
   @Input() chartBarsResults;
+  @Input() chartBlockResults;
   constructor() {}
 }

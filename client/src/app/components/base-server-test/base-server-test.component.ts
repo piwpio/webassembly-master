@@ -23,9 +23,9 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   isReadyForNextTest = false;
   isRunning = false;
 
-  tableDisplayedColumns: string[] = ['testNo', ...SortTests];
-  tablePreparedResults: SortTablePreparedResults[] = null;
-  chartBlockResults: SortChartBlockResults = null;
+  tableDisplayedColumns = null;
+  tablePreparedResults = null;
+  chartBlockResults = null;
   chartBarsResults = null;
   allResults = null;
 
@@ -76,8 +76,11 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   runTest(): void {
     const testData = this.getTestData();
     if (testData) {
+      this.tableDisplayedColumns = null;
+      this.tablePreparedResults = null;
       this.allResults = null;
       this.chartBarsResults = null;
+      this.chartBlockResults = null;
       this.socketService.emitNewTest(testData);
     }
   }
@@ -97,6 +100,13 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
     console.log(results);
 
     for (const r of results) {
+      if (!r) continue;
+
+      if (!this.tableDisplayedColumns) {
+        this.tableDisplayedColumns = [];
+      }
+      this.tableDisplayedColumns.push(r.testIndex);
+
       if (!this.allResults) {
         this.allResults = {
           memory: { combined: [] },
@@ -131,8 +141,38 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       this.chartBarsResults.performance[1].series.push({ name: r.testLabel, value: getSlowest(r.performance) });
       this.chartBarsResults.performance[2].series.push({ name: r.testLabel, value: getAverage(r.performance) });
       this.chartBarsResults.performance[3].series.push({ name: r.testLabel, value: getMedian(r.performance) });
+
+      if (!this.chartBlockResults) {
+        this.chartBlockResults = {
+          memory: {},
+          performance: {},
+        };
+      }
+      this.chartBlockResults.memory[r.testIndex] = [];
+      this.chartBlockResults.performance[r.testIndex] = [];
+
+      this.chartBlockResults.memory[r.testIndex].push({ name: `Best ${r.testLabel}`, value: getFastest(r.memory) });
+      this.chartBlockResults.memory[r.testIndex].push({ name: `Worst ${r.testLabel}`, value: getSlowest(r.memory) });
+      this.chartBlockResults.memory[r.testIndex].push({ name: `Average ${r.testLabel}`, value: getAverage(r.memory) });
+      this.chartBlockResults.memory[r.testIndex].push({ name: `Median ${r.testLabel}`, value: getMedian(r.memory) });
+      this.chartBlockResults.performance[r.testIndex].push({
+        name: `Best ${r.testLabel}`,
+        value: getFastest(r.performance),
+      });
+      this.chartBlockResults.performance[r.testIndex].push({
+        name: `Worst ${r.testLabel}`,
+        value: getSlowest(r.performance),
+      });
+      this.chartBlockResults.performance[r.testIndex].push({
+        name: `Average ${r.testLabel}`,
+        value: getAverage(r.performance),
+      });
+      this.chartBlockResults.performance[r.testIndex].push({
+        name: `Median ${r.testLabel}`,
+        value: getMedian(r.performance),
+      });
     }
 
-    console.log(this.chartBarsResults);
+    console.log(this.chartBlockResults);
   }
 }
