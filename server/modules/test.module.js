@@ -11,9 +11,10 @@ let NEXT_WORKER_TEST_SUITE = null;
 let TEST_TYPE = null;
 let TEST_SUITES = null;
 let TEST_DATA = null;
+let TEST_REPEAT_TIMES = null;
 let MAIN_SOCKET = null;
 
-function run(testType, testSuites, testData) {
+function run(testType, testSuites, testData, testRepeatTimes) {
   if (!IS_READY) {
     return;
   }
@@ -21,6 +22,7 @@ function run(testType, testSuites, testData) {
   TEST_TYPE = testType;
   TEST_SUITES = testSuites;
   TEST_DATA = testData;
+  TEST_REPEAT_TIMES = testRepeatTimes;
   WORKER_TEST_SUITE_INDEX = 0;
   RESULTS = [];
 
@@ -74,7 +76,8 @@ function orReadyMessage(worker, testSuite) {
     data: {
       testType: TEST_TYPE,
       testSuite: testSuite,
-      testData: TEST_DATA
+      testData: TEST_DATA,
+      testRepeatTimes: TEST_REPEAT_TIMES
     }
   });
 }
@@ -120,18 +123,13 @@ function onExit(signal, code) {
 // ########################### HELPERS
 function prepareResults(data) {
   const p = data.performance;
-  const m = data.memory.rss / 1024 / 1024;
+  const m = data.memory.map(mem => mem.rss / 1024 / 1024);
 
-  if (RESULTS[data.testIndex] === undefined) {
-    RESULTS[data.testIndex] = {
-      testIndex: data.testIndex,
-      testLabel: data.testLabel,
-      performance: [p],
-      memory: [m]
-    }
-  } else {
-    RESULTS[data.testIndex].performance.push(p);
-    RESULTS[data.testIndex].memory.push(m);
+  RESULTS[data.testIndex] = {
+    testIndex: data.testIndex,
+    testLabel: data.testLabel,
+    performance: p,
+    memory: m
   }
 }
 
@@ -170,7 +168,7 @@ function setSocket(socket) {
   MAIN_SOCKET = socket;
 }
 function sendSocketWithBackendReady() {
-  // console.log(RESULTS);
+  console.log(RESULTS);
   IS_READY = true;
 
 

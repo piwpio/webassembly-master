@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { map, filter, tap } from 'rxjs/operators';
 import { Message, SocketMessageEvent, SocketMessageTestData, SocketMessageTestType } from '@models/server-data.model';
 
 @Injectable({
@@ -31,6 +31,9 @@ export class SocketService {
 
   startListeningOn<T>(event: SocketMessageEvent): Observable<T> {
     return this.socket.fromEvent<Message<T>>('msg').pipe(
+      tap((a) => {
+        console.log(a);
+      }),
       filter((msg) => msg.event === event),
       map((msg: Message<T>) => msg.data)
     );

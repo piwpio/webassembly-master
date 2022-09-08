@@ -6,9 +6,9 @@ const init = () => {
     if (msg.event === 'runTest') {
       const data = msg.data;
       if (data.testSuite.isWasm) {
-        runWasm(data.testType, data.testSuite, data.testData);
+        runWasm(data.testType, data.testSuite, data.testData, data.testRepeatTimes);
       } else {
-        runJs(data.testType, data.testSuite, data.testData);
+        runJs(data.testType, data.testSuite, data.testData, data.testRepeatTimes);
       }
     }
   });
@@ -16,45 +16,59 @@ const init = () => {
   process.send({ event: 'ready' });
 }
 
-function runWasm(testType, testSuite, testData) {
+function runWasm(testType, testSuite, testData, testRepeatTimes) {
   const fs = require('fs');
   const wasmBuffer = fs.readFileSync(`${testSuite.file}`);
 
-  const memory = new WebAssembly.Memory({
-    initial: 1024,
-    maximum: 1024
-  });
-  WebAssembly.instantiate(wasmBuffer, { env: { memory: memory }}).then(wasmModule => {
-    const test = wasmModule.instance.exports[testSuite.method];
-    // const memory = wasmModule.instance.exports.memory;
-    const testStartTime = performance.now();
+  // const memory = new WebAssembly.Memory({
+  //   initial: 1024,
+  //   maximum: 1024
+  // });
+  // WebAssembly.instantiate(wasmBuffer, { env: { memory: memory }}).then(wasmModule => {
+  WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
+    const memoryRes = [];
+    const performanceRes = [];
+    for (let i = 0; i < testRepeatTimes; i++) {
+      const test = wasmModule.instance.exports[testSuite.method];
+      const memory = wasmModule.instance.exports.memory;
+      const testStartTime = performance.now();
 
-    if (testType === 'sort') {
-      const array = new Float32Array(memory.buffer, 0, testData.length);
-      array.set(testData);
-      test(array, array.byteOffset, array.length - 1);
+      if (testType === 'sort') {
+        const array = new Float32Array(memory.buffer, 0, testData.length);
+        array.set(testData);
+        test(array, array.byteOffset, array.length - 1);
+      }
+
+      const testEndTime = performance.now();
+      const p = testEndTime - testStartTime;
+      const m = process.memoryUsage();
+      memoryRes.push(m);
+      performanceRes.push(p)
     }
 
-    const testEndTime = performance.now();
-    const m = process.memoryUsage();
-    const p = testEndTime - testStartTime;
-    sendResults(m, p, testSuite.testIndex, testSuite.testLabel);
+    sendResults(memoryRes, performanceRes, testSuite.testIndex, testSuite.testLabel);
   });
 }
 
-function runJs(testType, testSuite, testData) {
+function runJs(testType, testSuite, testData, testRepeatTimes) {
   const test = require(`../scripts/${testSuite.script}`)[testSuite.method];
-  const testStartTime = performance.now()
+  const memoryRes = [];
+  const performanceRes = [];
+  for (let i = 0; i < testRepeatTimes; i++) {
+    const testStartTime = performance.now()
 
-  if (testType === 'sort') {
-    test(testData, 0, testData.length - 1);
+    if (testType === 'sort') {
+      test(testData, 0, testData.length - 1);
+    }
+
+    const testEndTime = performance.now()
+    const p = testEndTime - testStartTime;
+    const m = process.memoryUsage();
+    memoryRes.push(m);
+    performanceRes.push(p)
   }
 
-  const testEndTime = performance.now()
-  const m = process.memoryUsage();
-  const p = testEndTime - testStartTime;
-
-  sendResults(m, p, testSuite.testIndex, testSuite.testLabel);
+  sendResults(memoryRes, performanceRes, testSuite.testIndex, testSuite.testLabel);
 }
 
 function sendResults(memoryUsage, performance, testIndex, testLabel) {
