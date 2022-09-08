@@ -3,10 +3,6 @@ const cluster = require('cluster');
 if (cluster.isMaster) {
   const mainWorker = require('./workers/main.worker.js')
   mainWorker.startServer();
-
-  const sortTests = require('./const/sort.const').test;
-  // testModule.run(sortTests);
-
 } else {
   const worker = require('./workers/worker.worker')
   worker.init();

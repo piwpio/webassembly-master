@@ -7,9 +7,12 @@ const ACTIVE_WORKERS = {};
 let WORKER_TEST_SUITE_INDEX = 0;
 let RESULTS = [];
 let IS_READY = true;
-let nextWorkerData = null;
+let NEXT_WORKER_TEST_SUITE = null;
 
-const run = (testSuites, _testData) => {
+const run = (testType, testSuites, testData) => {
+  if (!IS_READY) {
+    return;
+  }
   WORKER_TEST_SUITE_INDEX = 0;
   RESULTS = [];
   IS_READY = false;
@@ -23,12 +26,12 @@ const run = (testSuites, _testData) => {
     onExit(signal, code);
   });
 
-  cluster.on('online', (worker, _code, _signal) => {
-    const workerTestData = nextWorkerData ?? getTestDataForWorker(testSuites);
+  cluster.on('online', (worker) => {
+    const workerTestSuite = NEXT_WORKER_TEST_SUITE ?? getTestSuiteForWorker(testSuites);
 
     worker.on('message', function (msg) {
       if (msg.event === 'ready') {
-        orReadyMessage(worker, workerTestData)
+        orReadyMessage(worker, testType, workerTestSuite, testData)
       } else if (msg.event === 'results') {
         onResultsMessage(worker, msg.data, testSuites);
       } else if (msg.event === 'memoryUsage') {
@@ -40,10 +43,14 @@ const run = (testSuites, _testData) => {
 
 // ########################### MESSAGE CALLBACKS
 
-function orReadyMessage(worker, workerTestData) {
+function orReadyMessage(worker, testType, testSuite, testData) {
   worker.send({
     event: 'runTest',
-    data: workerTestData
+    data: {
+      testType,
+      testSuite,
+      testData
+    }
   });
 }
 
@@ -52,11 +59,11 @@ function onResultsMessage(worker, data, testSuites) {
   killWorker(worker).then(() => {
     if (isAnyTestWaiting(testSuites)) {
       // console.log('%d TESTS WAITING', testSuites.length - WORKER_TEST_SUITE_INDEX)
-      nextWorkerData = getTestDataForWorker(testSuites);
+      NEXT_WORKER_TEST_SUITE = getTestSuiteForWorker(testSuites);
       addNewWorker();
     } else if (Object.keys(ACTIVE_WORKERS).length === 0) {
       clean().then(() => {
-        nextWorkerData = null;
+        NEXT_WORKER_TEST_SUITE = null;
         sendSocketWithBackendReady();
       })
     }
@@ -107,7 +114,7 @@ function killWorker(worker) {
 
 // ########################### HELPERS
 function prepareResults(data) {
-  const p = data.performance.duration / 1000;
+  const p = data.performance / 1000;
   const m = data.memory.rss / 1024 / 1024;
 
   if (RESULTS[data.testIndex] === undefined) {
@@ -123,7 +130,7 @@ function prepareResults(data) {
   }
 }
 
-function getTestDataForWorker(testSuites) {
+function getTestSuiteForWorker(testSuites) {
   return testSuites[WORKER_TEST_SUITE_INDEX++];
 }
 
@@ -155,9 +162,10 @@ function clean() {
 // ########################### SOCKET COMUNICATION WITH FRONTEND
 
 function sendSocketWithBackendReady() {
-  console.log(RESULTS);
+  // console.log(RESULTS);
   IS_READY = true;
-  console.log('SEND SOCKET DATA');
+  // console.log('SEND SOCKET DATA');
+  console.log('###########################');
 }
 
 function getTestWorkerStatus() {

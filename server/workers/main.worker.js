@@ -47,21 +47,33 @@ function socketOnStatus(socket) {
 }
 
 function socketOnNewTest(data) {
-  const testData = getTestData(data)
-  // run()
+  const {testType, testSuites, clientData} = getTestSuites(data)
+  run(testType, testSuites, clientData)
 }
 
 // ########################### HELPERS
 
-function getTestData(data) {
-  console.log(data)
+function getTestSuites(data) {
   const testType = data.testType;
   const clientData = data.clientData;
-  const repeatTimes = data.repeatTimes;
-  const custom = data?.custom;
-  console.log(testType, clientData, repeatTimes, custom);
+  const repeatTimes = data.repeatTimes ?? 1;
+  const custom = data.custom ?? {};
 
-  return [];
+  let originalSuites;
+  if (testType === 'sort') {
+    originalSuites = require('../const/sort.const').testSuites;
+  }
+
+  let testSuites = [];
+  for (let i = 0; i < repeatTimes; i++) {
+    testSuites = [...testSuites, ...originalSuites];
+  }
+
+  return {
+    testType,
+    testSuites,
+    clientData
+  };
 }
 
 function getStatus() {
