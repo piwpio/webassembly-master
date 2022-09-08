@@ -13,10 +13,10 @@ export class SocketService {
 
   constructor(private socket: Socket) {
     this.socket.ioSocket.on('connect', () => {
-      this.connected.next(null);
+      this.connected.next(true);
     });
     this.socket.ioSocket.on('disconnect', () => {
-      this.disconnected.next(null);
+      this.disconnected.next(true);
     });
     // this.startDebugListening();
   }

@@ -3,6 +3,7 @@ import { SocketService } from '@services/socket.service';
 import { BaseServerTestComponent } from '@components/base-server-test/base-server-test.component';
 import { ServerReadyService } from '@services/server-ready.service';
 import { SocketMessageTestData, SocketMessageTestType } from '@models/server-data.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'server-sort',
@@ -25,14 +26,33 @@ export class ServerSortComponent extends BaseServerTestComponent {
   constructor(
     protected socketService: SocketService,
     protected serverReadyService: ServerReadyService,
-    protected readonly chRef: ChangeDetectorRef
+    protected readonly chRef: ChangeDetectorRef,
+    private readonly matSnackBar: MatSnackBar
   ) {
     super(socketService, serverReadyService, chRef);
   }
 
   getTestData(): SocketMessageTestData {
+    if (!this.areInputsValid()) {
+      this.matSnackBar.open('Invalid inputs');
+      return null;
+    }
+
     this.testData.clientData = this.generateFeed(this.testData.custom.arrayLength, this.testData.custom.floatDataType);
     return this.testData;
+  }
+
+  private areInputsValid(): boolean {
+    const repeatTimes = this.testData.repeatTimes;
+    const arrayLength = this.testData.custom.arrayLength;
+    const floatDataType = this.testData.custom.floatDataType;
+    return (
+      typeof floatDataType === 'boolean' &&
+      repeatTimes >= 1 &&
+      repeatTimes <= 10 &&
+      arrayLength > 1 &&
+      arrayLength <= 10_000_000
+    );
   }
 
   private generateFeed(arraySize: number, floats = true, max = 200_000_000): number[] {

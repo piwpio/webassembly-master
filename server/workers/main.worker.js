@@ -20,13 +20,13 @@ const startServer = () => {
   const sio = require('socket.io')(server,{
     cors: {
       origin: '*',
-    }
+    },
+    maxHttpBufferSize: 1e9
   });
   sio.sockets.on('connection', socket =>  {
     socket.on('msg', msg => {
       if (msg.event === 'status') {
         socketOnStatus(socket);
-
       } else if (msg.event === 'newTest') {
         socketOnNewTest(msg.data)
       }
@@ -46,17 +46,20 @@ function socketOnStatus(socket) {
   socket.emit('msg', socketMsg);
 }
 
-function socketOnNewTest() {
-  const testData = getTestData()
+function socketOnNewTest(data) {
+  const testData = getTestData(data)
   // run()
 }
 
 // ########################### HELPERS
 
 function getTestData(data) {
+  console.log(data)
+  const testType = data.testType;
   const clientData = data.clientData;
-  const test = data.test;
-  console.log(test, clientData);
+  const repeatTimes = data.repeatTimes;
+  const custom = data?.custom;
+  console.log(testType, clientData, repeatTimes, custom);
 
   return [];
 }

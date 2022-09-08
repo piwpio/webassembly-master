@@ -3,7 +3,8 @@ import { Subject } from 'rxjs';
 import { SocketService } from '@services/socket.service';
 import { SocketMessageStatus, SocketMessageTestData, SocketMessageTestType } from '@models/server-data.model';
 import { ServerReadyService } from '@services/server-ready.service';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-base-server-test',
@@ -31,7 +32,7 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
     this.socketService
       .startListeningOn<SocketMessageStatus>('status')
       .pipe(
-        take(1),
+        takeUntil(this.$destroy),
         filter((status) => !!status?.testType),
         filter((status) => status.testType === this.testType)
       )
@@ -53,8 +54,9 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
 
   runTest(): void {
     const testData = this.getTestData();
-    // console.log(testData);
-    this.socketService.emitNewTest(testData);
+    if (testData) {
+      this.socketService.emitNewTest(testData);
+    }
   }
 
   private setIsReadyForNextTest(isReady: boolean): void {

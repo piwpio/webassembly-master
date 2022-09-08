@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { SocketService } from '@services/socket.service';
 import { ServerReadyService } from '@services/server-ready.service';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/material/snack-bar';
 
 const config: SocketIoConfig = { url: 'http://localhost:3000' };
 
@@ -25,8 +26,14 @@ const config: SocketIoConfig = { url: 'http://localhost:3000' };
     AppMenuModule,
     HttpClientModule,
     SocketIoModule.forRoot(config),
+    MatSnackBarModule,
   ],
-  providers: [WebassemblyService, SocketService, ServerReadyService],
+  providers: [
+    WebassemblyService,
+    SocketService,
+    ServerReadyService,
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000 } },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -19,6 +19,7 @@ export class ServerReadyService {
     });
     socketService.onDisconnect().subscribe(() => {
       this.cosketConnected$.next(false);
+      this.setServerStatus();
     });
     socketService.startListeningOn<SocketMessageStatus>('status').subscribe((data) => {
       this.socketMessageStatusIsReady$.next(data.isReady);
