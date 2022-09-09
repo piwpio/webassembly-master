@@ -10,7 +10,7 @@ export class WebassemblyService {
 
   initWasm(url: string, imports: WebAssembly.Imports = {}): Promise<WebAssembly.WebAssemblyInstantiatedSource> {
     return this.http
-      .get(url, { responseType: 'arraybuffer' })
+      .get(url + '?t=' + Date.now(), { responseType: 'arraybuffer' })
       .pipe(mergeMap((bytes) => WebAssembly.instantiate(bytes, imports)))
       .toPromise();
   }

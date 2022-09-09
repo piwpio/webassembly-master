@@ -8,15 +8,12 @@ import {
   TestResults,
 } from '@models/server-data.model';
 import { ServerReadyService } from '@services/server-ready.service';
-import { filter, takeUntil, tap } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { SortAllResults, SortChartBlockResults, SortTablePreparedResults, SortTests } from '@features/sort/sort.model';
-import { ChartBarsData } from '@models/charts.model';
-import { ResultType } from '@models/common.model';
-import { getAverage, getFastest, getMedian, getRowClass, getSlowest, round2 } from '@services/utils';
+import { filter, takeUntil } from 'rxjs/operators';
+import { getAverage, getFastest, getMedian, getSlowest, round2 } from '@services/utils';
 
 @Component({
   selector: 'app-base-server-test',
+  template: '',
 })
 export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   testType: SocketMessageTestType;
