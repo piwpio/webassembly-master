@@ -39,6 +39,12 @@ function addNewWorker() {
   worker.on('online', ()=> {
     // console.log('WORKER IS ONLINE', worker.id);
     const workerTestSuite = getTestSuiteForWorker();
+
+    if (workerTestSuite === undefined) {
+      onResultsMessage(worker)
+      return;
+    }
+
     worker.on('message', function (msg) {
       if (msg.event === 'ready') {
         orReadyMessage(worker, workerTestSuite)
@@ -81,9 +87,11 @@ function orReadyMessage(worker, testSuite) {
 }
 
 function onResultsMessage(worker, data) {
-  prepareResults(data);
+  if (data) {
+    prepareResults(data);
+  }
   killWorker(worker).then(() => {
-    if (isAnyTestWaiting(TEST_SUITES)) {
+    if (isAnyTestWaiting()) {
       addNewWorker();
     } else if (Object.keys(ACTIVE_WORKERS).length === 0) {
       clean().then(() => sendSocketWithBackendReady())
