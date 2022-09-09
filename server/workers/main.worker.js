@@ -1,11 +1,13 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
-const testModule = require('../modules/cluster-test.module');
 
 let MAIN_SOCKET = null;
+let TEST_MODULE = null;
 
-const startServer = () => {
+const startServer = (testModule) => {
+  TEST_MODULE = testModule;
+
   const app = express();
 
   const clientPath = path.join(__dirname, '..', 'client')
@@ -29,7 +31,7 @@ const startServer = () => {
 
   sio.sockets.on('connection', socket =>  {
     MAIN_SOCKET = socket;
-    testModule.setSocket(MAIN_SOCKET);
+    TEST_MODULE.setSocket(MAIN_SOCKET);
     socket.on('msg', msg => {
       if (msg.event === 'status') {
         socketOnStatus();
@@ -57,7 +59,7 @@ function socketOnStatus(testType) {
 
 function socketOnNewTest(data) {
   const {testType, testSuites, clientData, repeatTimes} = getTestSuites(data);
-  testModule.run(testType, testSuites, clientData, repeatTimes);
+  TEST_MODULE.run(testType, testSuites, clientData, repeatTimes);
 }
 
 // ########################### HELPERS
@@ -73,16 +75,21 @@ function getTestSuites(data) {
     originalSuites = require('../const/sort.const').testSuites;
   }
 
+  let testSuites = [];
+  for (let i = 0; i < repeatTimes; i++) {
+    testSuites = [...testSuites, ...originalSuites];
+  }
+
   return {
     testType,
-    testSuites: originalSuites,
+    testSuites: testSuites,
     clientData,
     repeatTimes,
   };
 }
 
 function getStatus() {
-  return testModule.getTestWorkerStatus();
+  return TEST_MODULE.getTestWorkerStatus();
 }
 
 module.exports = {

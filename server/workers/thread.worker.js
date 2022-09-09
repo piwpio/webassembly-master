@@ -1,19 +1,19 @@
+const { parentPort } = require('worker_threads')
 const { performance } = require("perf_hooks")
 
-const init = () => {
-  process.on('message', function(msg) {
-    if (msg.event === 'runTest') {
-      const data = msg.data;
-      if (data.testSuite.isWasm) {
-        runWasm(data.testType, data.testSuite, data.testData, data.testRepeatTimes);
-      } else {
-        runJs(data.testType, data.testSuite, data.testData, data.testRepeatTimes);
-      }
+parentPort.on("message", msg => {
+  if (msg.event === 'runTest') {
+    // console.log('WORKER THREAD RUN TEST');
+    const data = msg.data;
+    if (data.testSuite.isWasm) {
+      runWasm(data.testType, data.testSuite, data.testData, data.testRepeatTimes);
+    } else {
+      runJs(data.testType, data.testSuite, data.testData, data.testRepeatTimes);
     }
-  });
+  }
+});
 
-  process.send({ event: 'ready' });
-}
+parentPort.postMessage({ event: 'ready' });
 
 function runWasm(testType, testSuite, testData, testRepeatTimes) {
   const fs = require('fs');
@@ -55,17 +55,17 @@ function runJs(testType, testSuite, testData, testRepeatTimes) {
   // const memoryRes = [];
   // const performanceRes = [];
   // for (let i = 0; i < testRepeatTimes; i++) {
-  const testStartTime = performance.now()
+    const testStartTime = performance.now()
 
-  if (testType === 'sort') {
-    test(testData, 0, testData.length - 1);
-  }
+    if (testType === 'sort') {
+      test(testData, 0, testData.length - 1);
+    }
 
-  const testEndTime = performance.now()
-  const p = testEndTime - testStartTime;
-  const m = process.memoryUsage();
-  // memoryRes.push(m);
-  // performanceRes.push(p)
+    const testEndTime = performance.now()
+    const p = testEndTime - testStartTime;
+    const m = process.memoryUsage();
+    // memoryRes.push(m);
+    // performanceRes.push(p)
   // }
 
   // sendResults(memoryRes, performanceRes, testSuite.testIndex, testSuite.testLabel);
@@ -73,7 +73,7 @@ function runJs(testType, testSuite, testData, testRepeatTimes) {
 }
 
 function sendResults(memoryUsage, performance, testIndex, testLabel) {
-  process.send({
+  parentPort.postMessage({
     event: 'results',
     data: {
       testIndex: testIndex,
@@ -85,12 +85,8 @@ function sendResults(memoryUsage, performance, testIndex, testLabel) {
 }
 
 function sendMemoryUsage() {
-  process.send({
+  parentPort.postMessage({
     event: 'memoryUsage',
     data: process.memoryUsage()
   });
-}
-
-module.exports = {
-  init
 }

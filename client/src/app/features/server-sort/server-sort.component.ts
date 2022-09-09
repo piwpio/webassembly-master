@@ -15,7 +15,7 @@ export class ServerSortComponent extends BaseServerTestComponent {
   testType: SocketMessageTestType = 'sort';
   testData: SocketMessageTestData = {
     testType: this.testType,
-    repeatTimes: 1,
+    repeatTimes: 2,
     clientData: [],
     custom: {
       arrayLength: 100000,

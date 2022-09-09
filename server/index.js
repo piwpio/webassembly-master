@@ -2,7 +2,17 @@ const cluster = require('cluster');
 
 if (cluster.isPrimary) {
   const mainWorker = require('./workers/main.worker.js')
-  mainWorker.startServer();
+
+  const approach = 'cluster';
+  // const approach = 'thread';
+  let testModule;
+  if (approach === 'cluster') {
+    testModule = require('./modules/cluster-test.module');
+  } else if (approach === 'thread') {
+    testModule = require('./modules/thread-test.module');
+  }
+
+  mainWorker.startServer(testModule);
 } else {
   const worker = require('./workers/cluster-worker.worker')
   worker.init();
