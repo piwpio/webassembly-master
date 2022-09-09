@@ -1,6 +1,6 @@
 {
   "name": "webassembly-master",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "prepare": "husky install",
     "start": "ng serve --live-reload=false --configuration test",
