@@ -4,7 +4,7 @@ if (cluster.isPrimary) {
   const mainWorker = require('./workers/main.worker.js')
   mainWorker.startServer();
 } else {
-  const worker = require('./workers/worker.worker')
+  const worker = require('./workers/cluster-worker.worker')
   worker.init();
 }
 

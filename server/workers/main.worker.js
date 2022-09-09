@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
-const testModule = require('../modules/test.module');
+const testModule = require('../modules/cluster-test.module');
 
 let MAIN_SOCKET = null;
 
