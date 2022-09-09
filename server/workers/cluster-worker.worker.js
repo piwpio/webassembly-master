@@ -1,4 +1,3 @@
-const {generateSortFeed} = require('../utils');
 const { performance } = require("perf_hooks")
 
 const init = () => {
