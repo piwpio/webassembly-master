@@ -72,12 +72,9 @@ function getTestSuites(data) {
   const repeatTimes = data.repeatTimes ?? 1;
   const custom = data.custom ?? {};
 
-  let originalSuites;
-  if (testType === 'sort') {
-    originalSuites = require('../const/sort.const').testSuites;
-  }
-
+  let originalSuites = require(`../const/${testType}.const`).testSuites;
   originalSuites = [...originalSuites];
+
   for (let i = 0; i < originalSuites.length; i++) {
     originalSuites[i].testIndex = i;
   }

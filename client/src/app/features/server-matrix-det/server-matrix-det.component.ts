@@ -6,19 +6,15 @@ import { SocketMessageTestData, SocketMessageTestType } from '@models/server-dat
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'server-sort',
-  templateUrl: './server-sort.component.html',
+  selector: 'server-matrix-det',
+  templateUrl: './server-matrix-det.component.html',
 })
-export class ServerSortComponent extends BaseServerTestComponent {
-  testType: SocketMessageTestType = 'sort';
+export class ServerMatrixDetComponent extends BaseServerTestComponent {
+  testType: SocketMessageTestType = 'matrix-det';
   testData: SocketMessageTestData = {
     testType: this.testType,
     repeatTimes: 1,
-    clientData: [],
-    custom: {
-      arrayLength: 10,
-      floatDataType: true,
-    },
+    clientData: 10,
   };
 
   constructor(
@@ -36,7 +32,6 @@ export class ServerSortComponent extends BaseServerTestComponent {
       return null;
     }
 
-    this.testData.clientData = this.generateFeed(this.testData.custom.arrayLength, this.testData.custom.floatDataType);
     return this.testData;
   }
 
@@ -45,29 +40,8 @@ export class ServerSortComponent extends BaseServerTestComponent {
   }
 
   private areInputsValid(): boolean {
-    const repeatTimes = this.testData.repeatTimes;
-    const arrayLength = this.testData.custom.arrayLength;
-    const floatDataType = this.testData.custom.floatDataType;
     return (
-      typeof floatDataType === 'boolean' &&
-      repeatTimes >= 1 &&
-      repeatTimes <= 10 &&
-      arrayLength > 1 &&
-      arrayLength <= 10_000_000
+      typeof this.testData.clientData === 'number' && this.testData.clientData >= 1 && this.testData.clientData <= 4000
     );
-  }
-
-  private generateFeed(arraySize: number, floats = true, max = 200_000_000): number[] {
-    const feed = [];
-    if (floats) {
-      for (let i = 0; i < arraySize; i++) {
-        feed.push(Math.random());
-      }
-    } else {
-      for (let i = 0; i < arraySize; i++) {
-        feed.push(Math.floor(Math.random() * max));
-      }
-    }
-    return feed;
   }
 }

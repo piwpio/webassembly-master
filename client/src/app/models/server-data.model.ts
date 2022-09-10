@@ -1,5 +1,5 @@
 export type SocketMessageEvent = 'status' | 'newTest';
-export type SocketMessageTestType = 'sort';
+export type SocketMessageTestType = 'sort' | 'matrix-det';
 
 export interface Message<T> {
   event: SocketMessageEvent;

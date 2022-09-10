@@ -4,6 +4,7 @@
   "scripts": {
     "prepare": "husky install",
     "start": "ng serve --live-reload=false --configuration test",
+    "server-test": "node ./server/index-test.js",
     "start-server:single": "node ./server/index.js single",
     "start-server:cluster": "node ./server/index.js cluster",
     "start-server:thread": "node ./server/index.js thread",

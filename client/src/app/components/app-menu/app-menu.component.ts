@@ -8,11 +8,12 @@ interface AppMenu {
 }
 
 const ROUTES: AppMenu[] = [
-  { label: 'Fibonacci', url: '/fib' },
-  { label: '3D cube', url: '/3dtest' },
-  { label: 'Image processing', url: '/image' },
-  { label: 'Array sorting', url: '/sort' },
-  { label: 'Server array sorting', url: '/server-sort' },
+  // { label: 'Fibonacci', url: '/fib' },
+  // { label: '3D cube', url: '/3dtest' },
+  // { label: 'Image processing', url: '/image' },
+  // { label: 'Array sorting', url: '/sort' },
+  // { label: 'Server array sorting', url: '/server-sort' },
+  { label: 'Matrix determinant', url: '/server-matrix-det' },
 ];
 
 @Component({

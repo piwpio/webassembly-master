@@ -28,6 +28,11 @@ const routes: Routes = [
     loadChildren: () => import('./features/server-sort/server-sort.module').then((m) => m.ServerSortModule),
   },
   {
+    path: 'server-matrix-det',
+    loadChildren: () =>
+      import('./features/server-matrix-det/server-matrix-det.module').then((m) => m.ServerMatrixDetModule),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

@@ -22,8 +22,15 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
     //   initial: 1024,
     //   maximum: 1024
     // });
-    // WebAssembly.instantiate(wasmBuffer, { env: { memory: memory }}).then(wasmModule => {
-    WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
+    WebAssembly.instantiate(wasmBuffer, {
+      env: {
+        emscripten_random: Math.random,
+        // memory: memory
+      },
+      wasi_snapshot_preview1: {
+        proc_exit: console.log
+      }
+    }).then(wasmModule => {
       const test = wasmModule.instance.exports[testSuite.method];
       const memory = wasmModule.instance.exports.memory;
 
@@ -36,6 +43,10 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
         m1 = process.memoryUsage();
         test(array, array.byteOffset, array.length - 1);
         // m2 = process.memoryUsage();
+      } else if (testType === 'matrix-det') {
+        let a = test(testData);
+        console.log(a);
+        m1 = process.memoryUsage();
       }
 
       const pe = performance.now();

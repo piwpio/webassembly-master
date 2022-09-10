@@ -1,7 +1,7 @@
 const cluster = require('cluster');
 
 if (cluster.isPrimary) {
-  const mainWorker = require('./workers/main.worker.js')
+  const mainWorker = require('./workers/main.worker.js');
 
   const approach = process.argv[2];
   let testModule;
