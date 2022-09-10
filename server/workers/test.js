@@ -27,8 +27,8 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
       const test = wasmModule.instance.exports[testSuite.method];
       const memory = wasmModule.instance.exports.memory;
 
-      const ps = performance.now();
       let m1, m2;
+      const ps = performance.now();
 
       if (testType === 'sort') {
         const array = new Float32Array(memory.buffer, 0, testData.length);
@@ -54,13 +54,16 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
 function runJs(testType, testSuite, testData, testRepeatTimes) {
   return new Promise(resolve => {
     const test = require(`../scripts/${testSuite.script}`)[testSuite.method];
-    const ps = performance.now();
+
+    let visualization;
     let m1, m2;
+    const ps = performance.now();
 
     if (testType === 'sort') {
       m1 = process.memoryUsage();
       test(testData, 0, testData.length - 1);
       // m2 = process.memoryUsage();
+      visualization = testData;
     }
 
     const pe = performance.now();
@@ -70,7 +73,8 @@ function runJs(testType, testSuite, testData, testRepeatTimes) {
       memory: [m1, m2],
       performance: p,
       testIndex: testSuite.testIndex,
-      testLabel: testSuite.testLabel
+      testLabel: testSuite.testLabel,
+      visualization: visualization,
     });
   });
 }

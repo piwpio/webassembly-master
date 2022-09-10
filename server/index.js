@@ -4,8 +4,8 @@ if (cluster.isPrimary) {
   const mainWorker = require('./workers/main.worker.js')
 
   // const approach = 'cluster';
-  // const approach = 'thread';
-  const approach = 'single';
+  const approach = 'thread';
+  // const approach = 'single';
   let testModule;
   if (approach === 'cluster') {
     testModule = require('./modules/cluster-test.module');
