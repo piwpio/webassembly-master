@@ -77,6 +77,11 @@ function getTestSuites(data) {
     originalSuites = require('../const/sort.const').testSuites;
   }
 
+  originalSuites = [...originalSuites];
+  for (let i = 0; i < originalSuites.length; i++) {
+    originalSuites[i].testIndex = i;
+  }
+
   let testSuites = [];
   for (let i = 0; i < repeatTimes; i++) {
     testSuites = [...testSuites, ...originalSuites];

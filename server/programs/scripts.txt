@@ -1,11 +1,21 @@
 ! wasm file built by below command.
 
+QUICKSORT
+em++ -O1 ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/quicksortO1.wasm --no-entry -s TOTAL_MEMORY=256mb
+em++ -Oz ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/quicksortOz.wasm --no-entry -s TOTAL_MEMORY=256mb
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/quicksortO3.wasm --no-entry -s TOTAL_MEMORY=256mb
+
+
+
+
+
+
+
+
 //client
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/sort.cpp -o ~/Dropbox/Magisterka/webassembly-master/client/src/assets/scripts/sort/sort.wasm --no-entry -s TOTAL_MEMORY=256mb
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/image.cpp -o ~/Dropbox/Magisterka/webassembly-master/client/src/assets/scripts/image/image.wasm --no-entry -s TOTAL_MEMORY=256mb
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/image.cpp -o ~/Dropbox/Magisterka/webassembly-master/client/src/assets/scripts/image/image.wasm --no-entry -s MODULARIZE=1
-
-
 
 
 //server
