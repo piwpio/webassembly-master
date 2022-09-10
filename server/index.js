@@ -4,12 +4,15 @@ if (cluster.isPrimary) {
   const mainWorker = require('./workers/main.worker.js')
 
   // const approach = 'cluster';
-  const approach = 'thread';
+  // const approach = 'thread';
+  const approach = 'single';
   let testModule;
   if (approach === 'cluster') {
     testModule = require('./modules/cluster-test.module');
   } else if (approach === 'thread') {
     testModule = require('./modules/thread-test.module');
+  } else if (approach === 'single') {
+    testModule = require('./modules/single-test.module');
   }
 
   mainWorker.startServer(testModule);

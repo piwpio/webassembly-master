@@ -5,7 +5,6 @@ const numCPUs = require('os').cpus().length;
 
 const WORKERS = [];
 const ACTIVE_WORKERS = {};
-let WORKER_TEST_SUITE_INDEX = 0;
 let RESULTS = [];
 let IS_READY = true;
 let TEST_TYPE = null;
@@ -23,7 +22,6 @@ function run(testType, testSuites, testData, testRepeatTimes) {
   TEST_SUITES = testSuites;
   TEST_DATA = testData;
   TEST_REPEAT_TIMES = testRepeatTimes;
-  WORKER_TEST_SUITE_INDEX = 0;
   RESULTS = [];
 
   // for (let i = 0; i < min(numCPUs, TEST_SUITES.length); i++) {

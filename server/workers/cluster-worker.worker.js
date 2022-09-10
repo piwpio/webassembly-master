@@ -1,23 +1,16 @@
 const init = () => {
   process.on('message', function(msg) {
     const t = require('./test');
-    t.test(msg).then(results => {
-      sendResults(results.memory, results.performance, results.testIndex, results.testLabel);
-    })
+    t.test(msg).then(results => sendResults(results));
   });
 
   process.send({ event: 'ready' });
 }
 
-function sendResults(memoryUsage, performance, testIndex, testLabel) {
+function sendResults(results) {
   process.send({
     event: 'results',
-    data: {
-      testIndex: testIndex,
-      testLabel: testLabel,
-      memory: memoryUsage,
-      performance: performance
-    }
+    data: results
   });
 }
 
