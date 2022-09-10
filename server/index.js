@@ -3,8 +3,8 @@ const cluster = require('cluster');
 if (cluster.isPrimary) {
   const mainWorker = require('./workers/main.worker.js')
 
-  const approach = 'cluster';
-  // const approach = 'thread';
+  // const approach = 'cluster';
+  const approach = 'thread';
   let testModule;
   if (approach === 'cluster') {
     testModule = require('./modules/cluster-test.module');

@@ -7,7 +7,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'server-sort',
-  // templateUrl: '../../components/base-server-test/base-server-test.component.html',
   templateUrl: './server-sort.component.html',
   styleUrls: ['./server-sort.component.scss'],
 })

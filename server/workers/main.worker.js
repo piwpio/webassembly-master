@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
+const {shuffleArray} = require('../utils');
 
 let MAIN_SOCKET = null;
 let TEST_MODULE = null;
@@ -79,6 +80,7 @@ function getTestSuites(data) {
   for (let i = 0; i < repeatTimes; i++) {
     testSuites = [...testSuites, ...originalSuites];
   }
+  shuffleArray(testSuites);
 
   return {
     testType,

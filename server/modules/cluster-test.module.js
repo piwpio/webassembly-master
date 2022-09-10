@@ -37,7 +37,6 @@ function addNewWorker() {
   const worker = cluster.fork();
   ACTIVE_WORKERS[worker.id] = worker;
   worker.on('online', ()=> {
-    // console.log('WORKER IS ONLINE', worker.id);
     const workerTestSuite = getTestSuiteForWorker();
 
     if (workerTestSuite === undefined) {
@@ -57,9 +56,8 @@ function addNewWorker() {
   })
 
   worker.on('exit', function(code, signal) {
-    onExit(signal, code);
+    // onExit(signal, code);
   });
-  // console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
 }
 
 function killWorker(worker) {
@@ -113,40 +111,27 @@ function onExit(signal, code) {
     console.log(`worker was killed by signal: ${signal}`);
   } else if (code !== 0) {
     console.log(`worker exited with error code: ${code}`);
-    // clean().then(() => {
-    //   sendSocketWithBackendReady();
-    // })
   } else {
-    // console.log('worker success!');
+    console.log('worker success!');
   }
 }
 
 // ########################### HELPERS
-function prepareResults(data) {
-  if (Array.isArray(data.performance)) {
-    const p = data.performance;
-    const m = data.memory.map(mem => mem.rss / 1024 / 1024);
 
+function prepareResults(data) {
+  const p = data.performance;
+  // const m = (data.memory[1].heapUsed - data.memory[0].heapUsed) / 1024 / 1024;
+  const m = data.memory[0].rss / 1024 / 1024;
+  if (RESULTS[data.testIndex] === undefined) {
     RESULTS[data.testIndex] = {
       testIndex: data.testIndex,
       testLabel: data.testLabel,
-      performance: p,
-      memory: m
+      performance: [p],
+      memory: [m]
     }
   } else {
-    const p = data.performance;
-    const m = data.memory.rss / 1024 / 1024;
-    if (RESULTS[data.testIndex] === undefined) {
-      RESULTS[data.testIndex] = {
-        testIndex: data.testIndex,
-        testLabel: data.testLabel,
-        performance: [p],
-        memory: [m]
-      }
-    } else {
-      RESULTS[data.testIndex].performance.push(p);
-      RESULTS[data.testIndex].memory.push(m);
-    }
+    RESULTS[data.testIndex].performance.push(p);
+    RESULTS[data.testIndex].memory.push(m);
   }
 }
 

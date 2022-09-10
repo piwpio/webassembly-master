@@ -55,19 +55,14 @@ function addNewWorker() {
       onMemoryUsage(worker, msg.data);
     }
   });
+
   worker.on('error', error => {
     // onError(error)
-    console.log('WORKER ERROR');
-    // console.log(error);
   });
-  worker.on('exit', (code) => {
-    console.log('WORKER EXIT CODE ', code);
-    // onExit(code)
-    // if (code !== 0)
-    //   reject(new Error(`stopped with  ${code} exit code`));
-  })
 
-  // console.log(Object.keys(ACTIVE_WORKERS).length, worker.id, 'ACTIVE_WORKERS added')
+  worker.on('exit', (code) => {
+    // onExit(code)
+  })
 }
 
 function terminateWorker(worker) {
@@ -109,8 +104,6 @@ function onResultsMessage(worker, data) {
   });
 }
 
-
-
 function onMemoryUsage(worker, data) {
   console.log("Worker with ID: %d consumes %imb of rss", worker.id, data.rss / 1024 / 1024);
   console.log("Worker with ID: %d consumes %imb of heapTotal", worker.id, data.heapTotal / 1024 / 1024);
@@ -121,40 +114,32 @@ function onMemoryUsage(worker, data) {
 }
 
 function onExit(code) {
-  console.log(code);
+  console.log('WORKER EXIT CODE ', code);
+  if (code !== 0) {
+    console.log(`STOPPED WITH ${code} EXIT CODE`);
+  }
 }
 
 function onError(error) {
-  console.log(error);
+  console.log('WORKER ERROR');
 }
 
 // ########################### HELPERS
 
 function prepareResults(data) {
-  if (Array.isArray(data.performance)) {
-    const p = data.performance;
-    const m = data.memory.map(mem => mem.rss / 1024 / 1024);
-
+  const p = data.performance;
+  // const m = (data.memory[1].heapUsed - data.memory[0].heapUsed) / 1024 / 1024;
+  const m = data.memory[0].rss / 1024 / 1024;
+  if (RESULTS[data.testIndex] === undefined) {
     RESULTS[data.testIndex] = {
       testIndex: data.testIndex,
       testLabel: data.testLabel,
-      performance: p,
-      memory: m
+      performance: [p],
+      memory: [m]
     }
   } else {
-    const p = data.performance;
-    const m = data.memory.rss / 1024 / 1024;
-    if (RESULTS[data.testIndex] === undefined) {
-      RESULTS[data.testIndex] = {
-        testIndex: data.testIndex,
-        testLabel: data.testLabel,
-        performance: [p],
-        memory: [m]
-      }
-    } else {
-      RESULTS[data.testIndex].performance.push(p);
-      RESULTS[data.testIndex].memory.push(m);
-    }
+    RESULTS[data.testIndex].performance.push(p);
+    RESULTS[data.testIndex].memory.push(m);
   }
 }
 
