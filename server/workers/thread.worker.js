@@ -1,13 +1,16 @@
 const { parentPort } = require('worker_threads')
+const t = require('./test');
 
 parentPort.on("message", msg => {
-  const t = require('./test');
-  t.test(msg).then(results => sendResults(results));
+  t.test(msg).then(results => {
+    sendResults(results);
+  });
 });
 
 parentPort.postMessage({ event: 'ready' });
 
 function sendResults(results) {
+  console.log('WORKER THREAD SEND RESULTS');
   parentPort.postMessage({
     event: 'results',
     data: results

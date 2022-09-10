@@ -4,7 +4,8 @@
   "scripts": {
     "prepare": "husky install",
     "start": "ng serve --live-reload=false --configuration test",
-    "start-server": "node --expose-gc --stack-size=10000 ./server/index.js",
+    "start-server": "node ./server/index.js",
+    "start-server2": "node --expose-gc --stack-size=10000 ./server/index.js",
     "start-aot": "ng serve --live-reload=false",
     "build:test": "ng build",
     "build:prod": "ng build --prod",

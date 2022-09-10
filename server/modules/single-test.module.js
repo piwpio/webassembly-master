@@ -1,4 +1,5 @@
 const {test} = require('../workers/test');
+const {prepareResults} = require('./module-utils');
 
 let WORKER_TEST_SUITE_INDEX = 0;
 let RESULTS = [];
@@ -57,28 +58,11 @@ function getMessage(testSuite) {
 
 function onResults(data) {
   if (data) {
-    prepareResults(data);
+    prepareResults(RESULTS, data);
   }
 }
 
 // ########################### HELPERS
-
-function prepareResults(data) {
-  const p = data.performance;
-  // const m = (data.memory[1].heapUsed - data.memory[0].heapUsed) / 1024 / 1024;
-  const m = data.memory[0].rss / 1024 / 1024;
-  if (RESULTS[data.testIndex] === undefined) {
-    RESULTS[data.testIndex] = {
-      testIndex: data.testIndex,
-      testLabel: data.testLabel,
-      performance: [p],
-      memory: [m]
-    }
-  } else {
-    RESULTS[data.testIndex].performance.push(p);
-    RESULTS[data.testIndex].memory.push(m);
-  }
-}
 
 function getTestSuite() {
   return TEST_SUITES.shift();

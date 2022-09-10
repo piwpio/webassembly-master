@@ -1,6 +1,7 @@
 const cluster = require('cluster');
 const {min} = require('mathjs');
 const numCPUs = require('os').cpus().length;
+const {prepareResults} = require('./module-utils');
 
 const WORKERS = [];
 const ACTIVE_WORKERS = {};
@@ -11,6 +12,7 @@ let TEST_SUITES = null;
 let TEST_DATA = null;
 let TEST_REPEAT_TIMES = null;
 let MAIN_SOCKET = null;
+let TEST_LENGTH = null;
 
 function run(testType, testSuites, testData, testRepeatTimes) {
   if (!IS_READY) {
@@ -22,9 +24,10 @@ function run(testType, testSuites, testData, testRepeatTimes) {
   TEST_DATA = testData;
   TEST_REPEAT_TIMES = testRepeatTimes;
   RESULTS = [];
+  TEST_LENGTH = testSuites.length;
 
-  for (let i = 0; i < min(numCPUs, TEST_SUITES.length); i++) {
-  // for (let i = 0; i < min(1, TEST_SUITES.length); i++) {
+  for (let i = 0; i < min(numCPUs, TEST_LENGTH.length); i++) {
+  // for (let i = 0; i < min(1, TEST_LENGTH.length); i++) {
     addNewWorker();
   }
 }
@@ -41,6 +44,7 @@ function addNewWorker() {
       onResultsMessage(worker)
       return;
     }
+    console.log(`PERFORMING TEST ${TEST_LENGTH - TEST_SUITES.length} OF ${TEST_LENGTH}`);
 
     worker.on('message', function (msg) {
       if (msg.event === 'ready') {
@@ -84,7 +88,7 @@ function orReadyMessage(worker, testSuite) {
 
 function onResultsMessage(worker, data) {
   if (data) {
-    prepareResults(data);
+    prepareResults(RESULTS, data);
   }
   killWorker(worker).then(() => {
     if (isAnyTestWaiting()) {
@@ -115,23 +119,6 @@ function onExit(signal, code) {
 }
 
 // ########################### HELPERS
-
-function prepareResults(data) {
-  const p = data.performance;
-  // const m = (data.memory[1].heapUsed - data.memory[0].heapUsed) / 1024 / 1024;
-  const m = data.memory[0].rss / 1024 / 1024;
-  if (RESULTS[data.testIndex] === undefined) {
-    RESULTS[data.testIndex] = {
-      testIndex: data.testIndex,
-      testLabel: data.testLabel,
-      performance: [p],
-      memory: [m]
-    }
-  } else {
-    RESULTS[data.testIndex].performance.push(p);
-    RESULTS[data.testIndex].memory.push(m);
-  }
-}
 
 function getTestSuiteForWorker() {
   return TEST_SUITES.shift();
@@ -168,6 +155,8 @@ function setSocket(socket) {
   MAIN_SOCKET = socket;
 }
 function sendSocketWithBackendReady() {
+  // console.log(RESULTS);
+  console.log('###############################');
   IS_READY = true;
 
   const socketMsg = {

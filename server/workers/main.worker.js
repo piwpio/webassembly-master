@@ -33,6 +33,7 @@ const startServer = (testModule) => {
   sio.sockets.on('connection', socket =>  {
     MAIN_SOCKET = socket;
     TEST_MODULE.setSocket(MAIN_SOCKET);
+    socketOnStatus();
     socket.on('msg', msg => {
       if (msg.event === 'status') {
         socketOnStatus();

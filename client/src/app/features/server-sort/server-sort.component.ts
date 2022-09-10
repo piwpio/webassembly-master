@@ -14,10 +14,10 @@ export class ServerSortComponent extends BaseServerTestComponent {
   testType: SocketMessageTestType = 'sort';
   testData: SocketMessageTestData = {
     testType: this.testType,
-    repeatTimes: 2,
+    repeatTimes: 1,
     clientData: [],
     custom: {
-      arrayLength: 100000,
+      arrayLength: 10,
       floatDataType: true,
     },
   };
