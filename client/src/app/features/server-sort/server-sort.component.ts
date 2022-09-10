@@ -41,6 +41,10 @@ export class ServerSortComponent extends BaseServerTestComponent {
     return this.testData;
   }
 
+  visualize(data): void {
+    // console.log(data);
+  }
+
   private areInputsValid(): boolean {
     const repeatTimes = this.testData.repeatTimes;
     const arrayLength = this.testData.custom.arrayLength;

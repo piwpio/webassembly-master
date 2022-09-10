@@ -2,7 +2,7 @@ const {test} = require('../workers/test');
 const {prepareResults} = require('./module-utils');
 
 let WORKER_TEST_SUITE_INDEX = 0;
-let RESULTS = [];
+let RESULTS = {};
 let IS_READY = true;
 let TEST_TYPE = null;
 let TEST_SUITES = null;
@@ -20,9 +20,9 @@ async function run(testType, testSuites, testData, testRepeatTimes) {
   TEST_DATA = testData;
   TEST_REPEAT_TIMES = testRepeatTimes;
   WORKER_TEST_SUITE_INDEX = 0;
-  RESULTS = [];
+  RESULTS = {};
 
-  const testLength = TEST_SUITES.length;
+  const testLength = testSuites.length;
   for (let i = 0; i < testLength; i++) {
     console.log(`PERFORMING TEST ${i + 1} OF ${testLength}`);
 
@@ -89,9 +89,9 @@ function getTestWorkerStatus() {
   const status = {
     isReady: IS_READY,
   };
-  if (RESULTS.length) {
+  if (Object.keys(RESULTS).length) {
     status['testType'] = TEST_TYPE;
-    status['testResults'] = RESULTS
+    status['testResults'] = RESULTS;
   }
   return status;
 }

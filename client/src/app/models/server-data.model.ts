@@ -9,7 +9,10 @@ export interface Message<T> {
 export interface SocketMessageStatus {
   isReady: boolean;
   testType?: SocketMessageTestType;
-  testResults?: TestResults[];
+  testResults?: {
+    visualization: any;
+    results: TestResults[];
+  };
 }
 
 export interface TestResults {

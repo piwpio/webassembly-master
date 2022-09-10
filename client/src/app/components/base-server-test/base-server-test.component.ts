@@ -51,10 +51,10 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
         filter((status) => status.testType === this.testType)
       )
       .subscribe((payload) => {
-        console.log(payload);
         this.isRunning = !payload.isReady;
         if (payload.testResults) {
-          this.prepareResults(payload.testResults);
+          this.prepareResults(payload.testResults.results);
+          this.visualize(payload.testResults.visualization);
         }
       });
   }
@@ -68,6 +68,7 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
     this.$destroy.complete();
   }
 
+  abstract visualize(visualization);
   abstract getTestData(): SocketMessageTestData;
 
   runTest(): void {
@@ -89,8 +90,13 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   }
 
   private prepareResults(results: TestResults[]): void {
+    const tableDisplayedColumns = {};
+    const tableDisplayedColumnsWithTestNo = {};
     for (const r of results) {
       if (!r) continue;
+
+      tableDisplayedColumns[r.testLabel] = true;
+      tableDisplayedColumnsWithTestNo[r.testLabel] = true;
 
       r.memory = r.memory.map((m) => round2(m));
       r.performance = r.performance.map((m) => round2(m));
@@ -160,13 +166,6 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
         value: getMedian(r.performance),
       });
 
-      if (!this.tableDisplayedColumns) {
-        this.tableDisplayedColumns = [];
-        this.tableDisplayedColumnsWithTestNo = ['testNo'];
-      }
-      this.tableDisplayedColumns.push(r.testLabel);
-      this.tableDisplayedColumnsWithTestNo.push(r.testLabel);
-
       if (!this.tablePreparedResults) {
         this.tablePreparedResults = {
           memory: [],
@@ -190,6 +189,11 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       for (let i = 0; i < r.performance.length; i++) {
         this.tablePreparedResults.performance[i][r.testLabel] = r.performance[i];
       }
+    }
+
+    if (!this.tableDisplayedColumns) {
+      this.tableDisplayedColumns = Object.keys(tableDisplayedColumns);
+      this.tableDisplayedColumnsWithTestNo = ['testNo', ...Object.keys(tableDisplayedColumnsWithTestNo)];
     }
   }
 }

@@ -6,7 +6,7 @@ const numCPUs = require('os').cpus().length;
 
 const WORKERS = [];
 const ACTIVE_WORKERS = {};
-let RESULTS = [];
+let RESULTS = {};
 let IS_READY = true;
 let TEST_TYPE = null;
 let TEST_SUITES = null;
@@ -24,10 +24,10 @@ function run(testType, testSuites, testData, testRepeatTimes) {
   TEST_SUITES = testSuites;
   TEST_DATA = testData;
   TEST_REPEAT_TIMES = testRepeatTimes;
-  RESULTS = [];
+  RESULTS = {};
   TEST_LENGTH = testSuites.length;
 
-  // for (let i = 0; i < min(numCPUs, TEST_SUITES.length); i++) {
+  // for (let i = 0; i < min(numCPUs, TEST_LENGTH); i++) {
   for (let i = 0; i < min(1, TEST_LENGTH); i++) {
     addNewWorker();
   }
@@ -178,9 +178,9 @@ function getTestWorkerStatus() {
   const status = {
     isReady: IS_READY,
   };
-  if (RESULTS.length) {
+  if (Object.keys(RESULTS).length) {
     status['testType'] = TEST_TYPE;
-    status['testResults'] = RESULTS
+    status['testResults'] = RESULTS;
   }
   return status;
 }

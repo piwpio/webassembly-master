@@ -10,15 +10,15 @@ import { SocketMessageStatus } from '@models/server-data.model';
 export class ServerReadyService {
   private isReady$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private socketMessageStatusIsReady$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private cosketConnected$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private socketConnected$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private readonly socketService: SocketService) {
     socketService.onConnect().subscribe(() => {
-      this.cosketConnected$.next(true);
+      this.socketConnected$.next(true);
       this.setServerStatus();
     });
     socketService.onDisconnect().subscribe(() => {
-      this.cosketConnected$.next(false);
+      this.socketConnected$.next(false);
       this.setServerStatus();
     });
     socketService.startListeningOn<SocketMessageStatus>('status').subscribe((data) => {
@@ -32,6 +32,6 @@ export class ServerReadyService {
   }
 
   private setServerStatus() {
-    this.isReady$.next(this.cosketConnected$.value && this.socketMessageStatusIsReady$.value);
+    this.isReady$.next(this.socketConnected$.value && this.socketMessageStatusIsReady$.value);
   }
 }
