@@ -7,4 +7,4 @@ exports.testSuites = [
   { testIndex: 2, testLabel: 'JS QuickSort', isWasm: false, script: 'sort.js', method: 'jsQuickSort'},
   // { testIndex: 3, testLabel: 'JS Native', isWasm: false, script: 'sort.js', method: 'jsSort'},
   // { testIndex: 4, testLabel: 'JS Math.js', isWasm: false, script: 'sort.js', method: 'jsSortMath'},
-]
+];
