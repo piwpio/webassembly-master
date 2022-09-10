@@ -3,21 +3,15 @@
 
 extern "C" {
 
-double round(double value) {
-    return ((long)(value * 100 + .5) / 100.0);
-}
-
 EMSCRIPTEN_KEEPALIVE
 double gaussElimination(int n)
 {
     // generate matrix with numbers from 1 to 1000
     double **matrix = new double*[n];
-    for(int i = 0; i < n; i++) {
-        matrix[i] = new double[n];
-    }
     for (int a = 0; a < n; a++) {
+        matrix[a] = new double[n];
         for (int b = 0; b < n; b++) {
-           matrix[a][b] = std::floor(emscripten_random() * 10 + 1);
+           matrix[a][b] = std::floor(emscripten_random() * 1000 + 1);
         }
     }
 
@@ -53,7 +47,6 @@ double gaussElimination(int n)
             double c = matrix[i+1][k] / matrix[k][k];
             for (int j = 0; j < n; j++) {
                 matrix[i+1][j] -= c * matrix[k][j];
-                matrix[i+1][j] = round(matrix[i+1][j]);
             }
             i++;
         }
@@ -61,7 +54,6 @@ double gaussElimination(int n)
 
     for (int i = 0; i < n; i++) {
         det *= matrix[i][i];
-        det = round(det);
     }
 
     //clear matrix
