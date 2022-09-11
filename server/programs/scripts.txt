@@ -9,8 +9,11 @@ em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -
 MATRIX DET
 em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/matrix-det.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/matrix-detO2.wasm --no-entry -s TOTAL_MEMORY=256mb
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/matrix-det.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/matrix-detO3.wasm --no-entry -s TOTAL_MEMORY=256mb
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/matrix-det.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/matrix-detO3.wasm --no-entry -s ALLOW_MEMORY_GROWTH
 
-
+CHOLESKY
+em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/cholesky.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/choleskyO2.wasm --no-entry -s TOTAL_MEMORY=256mb
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/cholesky.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/choleskyO3.wasm --no-entry -s TOTAL_MEMORY=256mb
 
 
 
