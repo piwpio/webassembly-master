@@ -18,19 +18,21 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
     const fs = require('fs');
     const wasmBuffer = fs.readFileSync(`${testSuite.file}`);
 
+    // {
+    //   env: {
+    //     emscripten_random: Math.random,
+    //     memory: memory
+    //   },
+    //   wasi_snapshot_preview1: {
+    //     proc_exit: console.log
+    //   },
+    // }
+
     // const memory = new WebAssembly.Memory({
     //   initial: 1024,
     //   maximum: 1024
     // });
-    WebAssembly.instantiate(wasmBuffer, {
-      env: {
-        emscripten_random: Math.random,
-        // memory: memory
-      },
-      wasi_snapshot_preview1: {
-        proc_exit: console.log
-      }
-    }).then(wasmModule => {
+    WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
       const test = wasmModule.instance.exports[testSuite.method];
       const memory = wasmModule.instance.exports.memory;
 

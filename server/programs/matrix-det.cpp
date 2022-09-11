@@ -4,26 +4,26 @@
 extern "C" {
 
 EMSCRIPTEN_KEEPALIVE
-double gaussElimination(int n)
+double gaussElimination(int n, double *matrix)
 {
-    // generate matrix with numbers from 1 to 1000
-    double **matrix = new double*[n];
-    for (int a = 0; a < n; a++) {
-        matrix[a] = new double[n];
-        for (int b = 0; b < n; b++) {
-           matrix[a][b] = std::floor(emscripten_random() * 1000 + 1);
-        }
-    }
+//     // generate matrix with numbers from 1 to 1000
+//     double **matrix = new double*[n];
+//     for (int a = 0; a < n; a++) {
+//         matrix[a] = new double[n];
+//         for (int b = 0; b < n; b++) {
+//            matrix[a][b] = std::floor(emscripten_random() * 1000 + 1);
+//         }
+//     }
 
     double tmp;
     double det = 1;
     for (int k = 0; k < n - 1; k++) {
         for (int i = k; i < n - 1;) {
             // if diagonal number equals 0 swap it with other row
-            if (matrix[k][k] == 0) {
+            if (matrix[k * n + k] == 0) {
                 int swapIndex = 0;
                 for (int l = i+1; l < n; l++) {
-                    if (matrix[l][k] != 0) {
+                    if (matrix[l * n + k] != 0) {
                         swapIndex = l;
                         break;
                     }
@@ -37,30 +37,30 @@ double gaussElimination(int n)
 
                 // swap rows
                 for (int q = 0; q < n; q++) {
-                    tmp = matrix[k][q];
-                    matrix[k][q] = matrix[swapIndex][q];
-                    matrix[swapIndex][q] = tmp;
+                    tmp = matrix[k * n + q];
+                    matrix[k * n + q] = matrix[swapIndex * n + q];
+                    matrix[swapIndex * n + q] = tmp;
                 }
                 continue;
             }
 
-            double c = matrix[i+1][k] / matrix[k][k];
+            double c = matrix[(i+1) * n + k] / matrix[k * n + k];
             for (int j = 0; j < n; j++) {
-                matrix[i+1][j] -= c * matrix[k][j];
+                matrix[(i+1) * n + j] -= c * matrix[k * n + j];
             }
             i++;
         }
     }
 
     for (int i = 0; i < n; i++) {
-        det *= matrix[i][i];
+        det *= matrix[i * n + i];
     }
 
-    //clear matrix
-    for(int i = 0; i < n; i++) {
-        delete [] matrix[i];
-    }
-    delete [] matrix;
+//     //clear matrix
+//     for(int i = 0; i < n; i++) {
+//         delete [] matrix[i];
+//     }
+//     delete [] matrix;
 
     return det;
 }

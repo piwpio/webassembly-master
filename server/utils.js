@@ -6,7 +6,7 @@ const generateSortFeed = (arraySize = 0, floats = true, max = 200_000_000) => {
     }
   } else {
     for (let i = 0; i < arraySize; i++) {
-      feed.push(Math.floor(Math.random() * max));
+      feed.push(Math.floor(Math.random() * max) + 1);
     }
   }
   return feed;
