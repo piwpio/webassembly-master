@@ -14,6 +14,13 @@ em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/matrix-det.cpp 
 CHOLESKY
 em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/cholesky.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/choleskyO2.wasm --no-entry -s TOTAL_MEMORY=256mb
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/cholesky.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/choleskyO3.wasm --no-entry -s TOTAL_MEMORY=256mb
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/cholesky.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/choleskyO3.wasm --no-entry -s -s ALLOW_MEMORY_GROWTH=1
+
+FIBONACCI
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/fib.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/fibO3.wasm --no-entry
+em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/fib.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/fibO2.wasm --no-entry
+em++ -O1 ~/Dropbox/Magisterka/webassembly-master/server/programs/fib.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/fibO1.wasm --no-entry
+
 
 
 

@@ -22,22 +22,28 @@ WebAssembly.instantiate(wasmBuffer, {
   // const lowerTestData = Array(matrixTestData.length).fill(0);
   // [[2, 0, 0][6, 1, 0][-8, 5, 3]] [[2, 6, -8][0, 1, 5][0, 0, 3]]
 
-  const matrixSize = 100;
+  // const matrixSize = 800;
+  // const matrixTestData = Array(matrixSize * matrixSize).fill(0);
+  // const matrix = new Float64Array(memory.buffer, 0, matrixTestData.length);
+  // matrix.set(matrixTestData);
+  //
+  // t1 = performance.now();
+  // generate(matrixSize, matrix, 0, 1);
+  // t2 = performance.now();
+  // console.log(t2-t1);
+  // console.log(matrix);
 
-  const matrixTestData = Array(matrixSize * matrixSize).fill(0);
+  const matrixSize = 3000;
+  t1 = performance.now();
+  const matrixTestData = generateArrayForCholesky2(matrixSize, 0, 1);
+  t2 = performance.now();
+  // console.log(matrixTestData);
   const matrix = new Float64Array(memory.buffer, 0, matrixTestData.length);
   matrix.set(matrixTestData);
-
-  t1 = performance.now();
-  generate(matrixSize, matrix, 0, 1);
-  t2 = performance.now();
-  console.log(t2-t1);
-  // console.log(matrix);
 
   const lowerTestData = Array(matrixSize * matrixSize).fill(0);
   const lower = new Float64Array(memory.buffer, Float64Array.BYTES_PER_ELEMENT * (matrixSize * matrixSize), lowerTestData.length);
   lower.set(lowerTestData);
-
   t1 = performance.now();
   test(matrixSize, matrix, matrixTestData.length, lower);
   t2 = performance.now();
