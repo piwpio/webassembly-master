@@ -36,8 +36,8 @@ function generateArrayForCholesky2(n, min, max) {
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      // array[i * n + j] = Math.floor(Math.random() * 10) + min;
-      array[i * n + j] = Math.random() * (max - min) + min;
+      array[i * n + j] = Math.floor(Math.random() * 10) + min;
+      // array[i * n + j] = Math.random() * (max - min) + min;
     }
   }
 
@@ -61,8 +61,7 @@ function generateArrayForCholesky2(n, min, max) {
   return arrayForCholesky;
 }
 
-function cholesky(n, matrix) {
-  const lower = Array.from({length: n * n}, e => 0);
+function cholesky(n, matrix, lower) {
   for (let i = 0; i < n; i++) {
     for (let j = 0; j <= i; j++) {
       let sum = 0;
@@ -80,7 +79,6 @@ function cholesky(n, matrix) {
       }
     }
   }
-  return lower;
 }
 
 exports.cholesky = cholesky;
