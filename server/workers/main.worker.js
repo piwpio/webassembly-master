@@ -30,7 +30,7 @@ const startServer = (testModule) => {
     cors: {
       origin: '*',
     },
-    maxHttpBufferSize: 1e9
+    // maxHttpBufferSize: 1e9
   });
 
 
