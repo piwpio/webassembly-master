@@ -55,7 +55,28 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       .subscribe((payload) => {
         this.isRunning = !payload.isReady;
         if (payload.testResults) {
-          this.serverResults = JSON.stringify(payload.testResults.results, null, '\t');
+          // this.serverResults = JSON.stringify(payload.testResults.results, null, '\t');
+          // memory: number[];
+          // performance: number[];
+          // testIndex: number;
+          // testLabel: string;
+          let text = '';
+          for (const results of payload.testResults.results) {
+            text += `${results.testLabel}\n`;
+            text += `MEMORY:\n`;
+            for (const mem of results.memory) {
+              text += `${round2(mem)}\n`;
+            }
+            text += `PERFORMANCE:\n`;
+            for (const perf of results.performance) {
+              text += `${round2(perf)}\n`;
+            }
+            text += `\n`;
+          }
+
+          this.serverResults = text;
+
+          // this.serverResults = JSON.stringify(payload.testResults.results, null, '\t');
           this.prepareResults(payload.testResults.results);
           this.visualize(payload.testResults.visualization);
         }
