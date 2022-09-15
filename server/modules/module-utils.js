@@ -9,7 +9,7 @@ const prepareResults = (RESULTS, dataToAdd) => {
 
   const p = dataToAdd.performance;
   // const m = (dataToAdd.memory[1].heapUsed - dataToAdd.memory[0].heapUsed) / 1024 / 1024;
-  const m = dataToAdd.memory[0].rss / 1024 / 1024;
+  const m = (dataToAdd.memory[0].rss / 1024 / 1024) + (dataToAdd.memory[0].external / 1024 / 1024);
   if (RESULTS.results[dataToAdd.testIndex] === undefined) {
     RESULTS.results[dataToAdd.testIndex] = {
       testIndex: dataToAdd.testIndex,
