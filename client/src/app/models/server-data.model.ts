@@ -1,5 +1,12 @@
-export type SocketMessageEvent = 'status' | 'newTest';
-export type SocketMessageTestType = 'sort' | 'matrix-det';
+export type SocketMessageEvent =
+  | 'status'
+  | 'newTest'
+  | 'matrix-det'
+  | 'matrix-mul'
+  | 'cholesky'
+  | 'quicksort'
+  | 'fibonacci';
+export type SocketMessageTestType = 'matrix-det' | 'matrix-mul' | 'cholesky' | 'quicksort' | 'fibonacci';
 
 export interface Message<T> {
   event: SocketMessageEvent;

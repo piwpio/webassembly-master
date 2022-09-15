@@ -13,7 +13,12 @@ const ROUTES: AppMenu[] = [
   // { label: 'Image processing', url: '/image' },
   // { label: 'Array sorting', url: '/sort' },
   // { label: 'Server array sorting', url: '/server-sort' },
-  { label: 'Matrix determinant', url: '/server-matrix-det' },
+  // { label: 'Matrix determinant', url: '/server-matrix-det' },
+  { label: 'Matrix determinant', url: '/test/matrix-det' },
+  { label: 'Matrix multiplication', url: '/test/matrix-mul' },
+  { label: 'Cholesky', url: '/test/cholesky' },
+  { label: 'Quicksort', url: '/test/quicksort' },
+  { label: 'Fibonacci', url: '/test/fibonacci' },
 ];
 
 @Component({

@@ -1,0 +1,68 @@
+<div class="form__container">
+  <div>
+    <ng-container *ngIf="testType === 'matrix-det' || testType === 'matrix-mul' || testType === 'cholesky'">
+      <mat-form-field appearance="outline">
+        <mat-label>N matrix</mat-label>
+        <input
+          matInput
+          type="number"
+          min="1"
+          max="4000"
+          [disabled]="!isReadyForNextTest"
+          [(ngModel)]="testData.clientData"
+        />
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="testType === 'quicksort'">
+      <mat-form-field appearance="outline">
+        <mat-label>Array elements</mat-label>
+        <input
+          matInput
+          type="number"
+          min="1"
+          max="3000000"
+          [disabled]="!isReadyForNextTest"
+          [(ngModel)]="testData.clientData"
+        />
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="testType === 'fibonacci'">
+      <mat-form-field appearance="outline">
+        <mat-label>Fibonacci element</mat-label>
+        <input
+          matInput
+          type="number"
+          min="1"
+          max="50"
+          [disabled]="!isReadyForNextTest"
+          [(ngModel)]="testData.clientData"
+        />
+      </mat-form-field>
+    </ng-container>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Repeat times:</mat-label>
+      <input
+        matInput
+        type="number"
+        min="1"
+        max="5"
+        [disabled]="!isReadyForNextTest"
+        [(ngModel)]="testData.repeatTimes"
+      />
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" [disabled]="!isReadyForNextTest" (click)="runTest()">
+      Run benchmark
+    </button>
+  </div>
+</div>
+
+<app-results
+  [isRunning]="isRunning"
+  [chartBarsResults]="chartBarsResults"
+  [chartBlockResults]="chartBlockResults"
+  [tablePreparedResults]="tablePreparedResults"
+  [tableDisplayedColumns]="tableDisplayedColumns"
+  [tableDisplayedColumnsWithTestNo]="tableDisplayedColumnsWithTestNo"
+  [allResults]="allResults"
+></app-results>

@@ -27,7 +27,7 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   chartBarsResults = null;
   allResults = null;
 
-  private $destroy: Subject<boolean> = new Subject<boolean>();
+  public $destroy: Subject<boolean> = new Subject<boolean>();
 
   protected constructor(
     protected readonly socketService: SocketService,
@@ -113,16 +113,16 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       if (!this.chartBarsResults) {
         this.chartBarsResults = {
           memory: [
-            { name: 'Best', series: [] },
-            { name: 'Worst', series: [] },
             { name: 'Average', series: [] },
             { name: 'Median', series: [] },
+            { name: 'Best', series: [] },
+            { name: 'Worst', series: [] },
           ],
           performance: [
-            { name: 'Best', series: [] },
-            { name: 'Worst', series: [] },
             { name: 'Average', series: [] },
             { name: 'Median', series: [] },
+            { name: 'Best', series: [] },
+            { name: 'Worst', series: [] },
           ],
         };
       }
@@ -145,18 +145,11 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       this.chartBlockResults.memory[r.testIndex] = [];
       this.chartBlockResults.performance[r.testIndex] = [];
 
-      this.chartBlockResults.memory[r.testIndex].push({ name: `Best ${r.testLabel}`, value: getFastest(r.memory) });
-      this.chartBlockResults.memory[r.testIndex].push({ name: `Worst ${r.testLabel}`, value: getSlowest(r.memory) });
       this.chartBlockResults.memory[r.testIndex].push({ name: `Average ${r.testLabel}`, value: getAverage(r.memory) });
       this.chartBlockResults.memory[r.testIndex].push({ name: `Median ${r.testLabel}`, value: getMedian(r.memory) });
-      this.chartBlockResults.performance[r.testIndex].push({
-        name: `Best ${r.testLabel}`,
-        value: getFastest(r.performance),
-      });
-      this.chartBlockResults.performance[r.testIndex].push({
-        name: `Worst ${r.testLabel}`,
-        value: getSlowest(r.performance),
-      });
+      this.chartBlockResults.memory[r.testIndex].push({ name: `Best ${r.testLabel}`, value: getFastest(r.memory) });
+      this.chartBlockResults.memory[r.testIndex].push({ name: `Worst ${r.testLabel}`, value: getSlowest(r.memory) });
+
       this.chartBlockResults.performance[r.testIndex].push({
         name: `Average ${r.testLabel}`,
         value: getAverage(r.performance),
@@ -164,6 +157,14 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       this.chartBlockResults.performance[r.testIndex].push({
         name: `Median ${r.testLabel}`,
         value: getMedian(r.performance),
+      });
+      this.chartBlockResults.performance[r.testIndex].push({
+        name: `Best ${r.testLabel}`,
+        value: getFastest(r.performance),
+      });
+      this.chartBlockResults.performance[r.testIndex].push({
+        name: `Worst ${r.testLabel}`,
+        value: getSlowest(r.performance),
       });
 
       if (!this.tablePreparedResults) {

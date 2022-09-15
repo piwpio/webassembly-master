@@ -1,4 +1,5 @@
 const {performance} = require('perf_hooks');
+const {generateSortFeed, getPagesToGrow} = require('../utils');
 
 exports.test = function(msg) {
   if (msg.event !== 'runTest') {
@@ -44,10 +45,15 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
         array.set(testData);
         m1 = process.memoryUsage();
         test(array, array.byteOffset, array.length - 1);
-        // m2 = process.memoryUsage();
       } else if (testType === 'matrix-det') {
-        let a = test(testData);
-        console.log(a);
+        const data = generateSortFeed(Math.pow(testData, 2), false, 10);
+        const pagesToAllocate = getPagesToGrow(memory, Float64Array, Math.pow(testData, 2));
+        if (pagesToAllocate > 0) {
+          memory.grow(pagesToAllocate);
+        }
+        const array = new Float64Array(memory.buffer, 0, data.length);
+        array.set(data);
+        let a = test(testData, array);
         m1 = process.memoryUsage();
       }
 
@@ -75,8 +81,11 @@ function runJs(testType, testSuite, testData, testRepeatTimes) {
     if (testType === 'sort') {
       m1 = process.memoryUsage();
       test(testData, 0, testData.length - 1);
-      // m2 = process.memoryUsage();
       visualization = testData;
+    } else if (testType === 'matrix-det') {
+      const array = generateSortFeed(Math.pow(testData, 2), false, 10);
+      let a = test(testData, array);
+      m1 = process.memoryUsage();
     }
 
     const pe = performance.now();

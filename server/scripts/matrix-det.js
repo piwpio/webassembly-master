@@ -1,4 +1,4 @@
-function gaussElimination(n, matrix) {
+function matrixDet(n, matrix) {
   let det = 1;
   for (let k = 0; k < n - 1; k++) {
     for (let i = k; i < n - 1;) {
@@ -41,4 +41,4 @@ function gaussElimination(n, matrix) {
   return det;
 }
 
-exports.gaussElimination = gaussElimination;
+exports.matrixDet = matrixDet;

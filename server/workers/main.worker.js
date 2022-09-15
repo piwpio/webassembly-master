@@ -60,15 +60,15 @@ function socketOnStatus(testType) {
 }
 
 function socketOnNewTest(data) {
-  const {testType, testSuites, clientData, repeatTimes} = getTestSuites(data);
-  TEST_MODULE.run(testType, testSuites, clientData, repeatTimes);
+  const {testType, testSuites, testData, repeatTimes} = getTestSuites(data);
+  TEST_MODULE.run(testType, testSuites, testData, repeatTimes);
 }
 
 // ########################### HELPERS
 
 function getTestSuites(data) {
   const testType = data.testType;
-  const clientData = data.clientData;
+  const testData = data.clientData;
   const repeatTimes = data.repeatTimes ?? 1;
   const custom = data.custom ?? {};
 
@@ -87,8 +87,8 @@ function getTestSuites(data) {
 
   return {
     testType,
-    testSuites: testSuites,
-    clientData,
+    testSuites,
+    testData,
     repeatTimes,
   };
 }
