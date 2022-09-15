@@ -3,7 +3,7 @@
 
 extern "C" {
 
-int partition(float *arr, int start, int end)
+int partition(double *arr, int start, int end)
 {
     float pivot = arr[start];
 
@@ -34,7 +34,7 @@ int partition(float *arr, int start, int end)
 }
 
 EMSCRIPTEN_KEEPALIVE
-void quicksort(float data[], int start, int end)
+void quicksort(double data[], int start, int end)
 {
     if (start >= end) return;
 

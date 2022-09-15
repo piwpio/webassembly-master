@@ -1,6 +1,7 @@
 ! wasm file built by below command.
 
 QUICKSORT
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/quicksortO3.wasm --no-entry -s ALLOW_MEMORY_GROWTH=1
 em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/quicksortO3.wasm --no-entry -s TOTAL_MEMORY=256mb
 em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/quicksortO2.wasm --no-entry -s TOTAL_MEMORY=256mb
 em++ -O1 ~/Dropbox/Magisterka/webassembly-master/server/programs/quicksort.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/quicksortO1.wasm --no-entry -s TOTAL_MEMORY=256mb
@@ -24,6 +25,10 @@ em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/fibonacci.cpp -
 em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/fibonacci.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/fibonacciO2.wasm --no-entry
 em++ -O1 ~/Dropbox/Magisterka/webassembly-master/server/programs/fibonacci.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/fibonacciO1.wasm --no-entry
 
+
+ -s TOTAL_STACK = 8589934592
+ -s TOTAL_MEMORY=256mb
+ -s ALLOW_MEMORY_GROWTH
 
 
 

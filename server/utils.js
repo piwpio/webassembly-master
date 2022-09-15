@@ -35,6 +35,14 @@ const shuffleArray = (array) => {
   }
 }
 
+function getPagesToGrow(memory, dataType, elements) {
+  const bytesPerPage = 65536; //64 * 1024 bytes
+  const baseMemory = memory.buffer.byteLength; // emscripten default bytesPerPage * 256, 16777216 bytes
+  const dataMemory = dataType.BYTES_PER_ELEMENT * elements;
+  return Math.ceil((dataMemory - baseMemory) / bytesPerPage);
+}
+
 exports.memoryUsage = memoryUsage;
 exports.generateSortFeed = generateSortFeed;
 exports.shuffleArray = shuffleArray;
+exports.getPagesToGrow = getPagesToGrow;

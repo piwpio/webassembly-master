@@ -1,12 +1,12 @@
 const path = require('path');
 const file = path.join(__dirname, 'wasm', 'quicksortO3.wasm')
 const fs = require('fs');
-const {generateSortFeed} = require('./utils');
+const {generateSortFeed, getPagesToGrow} = require('./utils');
 const wasmBuffer = fs.readFileSync(file);
 const {performance} = require('perf_hooks');
 const {quicksort} = require('./scripts/quicksort');
 
-const size = 10_00_000;
+const size = 6_000_000; // + 4*(64/Float64Array.BYTES_PER_ELEMENT * 1024);
 
 WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
   const test = wasmModule.instance.exports['quicksort'];
@@ -14,8 +14,14 @@ WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
 
   const testData = generateSortFeed(size, false, 100);
 
+  const pagesToAllocate = getPagesToGrow(memory, Float64Array, size);
+  console.log(pagesToAllocate);
+  if (pagesToAllocate > 0) {
+    memory.grow(pagesToAllocate);
+  }
+
   // pamiętać, aby przekazać odpowiedni typ tablicy!!! double = Float64Array, float = Float32Array
-  const array = new Float32Array(memory.buffer, 0, testData.length);
+  const array = new Float64Array(memory.buffer, 0, testData.length);
   array.set(testData);
 
   const t1 = performance.now();
