@@ -4,8 +4,9 @@ function generateArrayForCholesky(n, min, max) {
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      array[i * n + j] = Math.floor(Math.random() * 10) + min;
+      // array[i * n + j] = Math.floor(Math.random() * 10) + min;
       // array[i * n + j] = Math.random() * (max - min) + min;
+      array[i * n + j] = Math.floor(Math.random() * max) + 1;
     }
   }
 

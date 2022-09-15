@@ -1,6 +1,6 @@
 const {performance} = require('perf_hooks');
 const {generateSortFeed, getPagesToGrow} = require('../utils');
-const {matrixMul} = require('../scripts/matrix-mul');
+const {generateArrayForCholesky} = require('../scripts/cholesky');
 
 exports.test = function(msg) {
   if (msg.event !== 'runTest') {
@@ -77,6 +77,17 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
 
         test(testData, matrix1.byteOffset, matrix2.byteOffset, results.byteOffset);
         m1 = process.memoryUsage();
+
+      } else if (testType === 'cholesky') {
+        const data1 = generateArrayForCholesky(testData, 0, 100);
+        const data2 = Array.from({length:  Math.pow(testData, 2)}, e => 0);
+        const matrix = new Float64Array(memory.buffer, 0, data1.length);
+        const lower = new Float64Array(memory.buffer, Float64Array.BYTES_PER_ELEMENT * Math.pow(testData, 2), data2.length);
+        matrix.set(data1);
+        lower.set(data2);
+        test(testData, matrix.byteOffset, lower.byteOffset);
+        m1 = process.memoryUsage();
+
       }
 
       const pe = performance.now();
@@ -114,7 +125,13 @@ function runJs(testType, testSuite, testData, testRepeatTimes) {
       const matrix1 = generateSortFeed(Math.pow(testData, 2), false, 100);
       const matrix2 = generateSortFeed(Math.pow(testData, 2), false, 100);
       const results = Array.from({length: Math.pow(testData, 2)}, e => 0);
-      matrixMul(testData, matrix1, matrix2, results);
+      test(testData, matrix1, matrix2, results);
+      m1 = process.memoryUsage();
+
+    } else if (testType === 'cholesky') {
+      const matrix = generateArrayForCholesky(testData, 0, 100);
+      const lower = Array.from({length:  Math.pow(testData, 2)}, e => 0);
+      test(testData, matrix, lower);
       m1 = process.memoryUsage();
     }
 
