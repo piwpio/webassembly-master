@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { SocketMessageTestData, SocketMessageTestType } from '@models/server-data.model';
 import { SocketService } from '@services/socket.service';
 import { ServerReadyService } from '@services/server-ready.service';
@@ -6,13 +6,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BaseServerTestComponent } from '@components/base-server-test/base-server-test.component';
 import { ActivatedRoute } from '@angular/router';
 import { take, takeUntil } from 'rxjs/operators';
+import { TitleService } from '@services/title.service';
 
 @Component({
   selector: 'server-calculations',
   templateUrl: './server-calculations.component.html',
   styleUrls: ['./server-calculations.component.scss'],
 })
-export class ServerCalculationsComponent extends BaseServerTestComponent {
+export class ServerCalculationsComponent extends BaseServerTestComponent implements OnDestroy {
   testData: SocketMessageTestData = {
     approach: 'cluster',
     testType: this.testType,
@@ -27,21 +28,29 @@ export class ServerCalculationsComponent extends BaseServerTestComponent {
     protected serverReadyService: ServerReadyService,
     protected readonly chRef: ChangeDetectorRef,
     private readonly matSnackBar: MatSnackBar,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly titleService: TitleService
   ) {
     super(socketService, serverReadyService, chRef);
 
     this.route.params.pipe(take(1)).subscribe((params) => {
       this.testType = params.test;
+      this.titleService.test$.next(params.test);
       this.testData.testType = params.test;
       this.testData.clientData = this.lastValues?.[params.test] ?? this.getDefaultValueForTest(params.test);
     });
 
     this.route.params.pipe(takeUntil(this.$destroy)).subscribe((params) => {
       this.testType = params.test;
+      this.titleService.test$.next(params.test);
       this.testData.testType = params.test;
       this.testData.clientData = this.lastValues?.[params.test] ?? this.getDefaultValueForTest(params.test);
     });
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this.titleService.test$.next(null);
   }
 
   getTestData(): SocketMessageTestData {
@@ -82,7 +91,7 @@ export class ServerCalculationsComponent extends BaseServerTestComponent {
 
   private getDefaultValueForTest(param: SocketMessageTestType): number {
     if (param === 'matrix-det' || param === 'matrix-mul' || param === 'cholesky') {
-      return 1000;
+      return 1024;
     } else if (param === 'quicksort') {
       return 100_000;
     } else if (param === 'fibonacci') {

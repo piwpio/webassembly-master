@@ -20,6 +20,8 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   isReadyForNextTest = false;
   isRunning = false;
 
+  serverResults: string;
+
   tableDisplayedColumns = null;
   tableDisplayedColumnsWithTestNo = null;
   tablePreparedResults = null;
@@ -53,6 +55,7 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
       .subscribe((payload) => {
         this.isRunning = !payload.isReady;
         if (payload.testResults) {
+          this.serverResults = JSON.stringify(payload.testResults.results, null, '\t');
           this.prepareResults(payload.testResults.results);
           this.visualize(payload.testResults.visualization);
         }
