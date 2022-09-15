@@ -83,7 +83,7 @@ function getTestSuites(data) {
   for (let i = 0; i < repeatTimes; i++) {
     testSuites = [...testSuites, ...originalSuites];
   }
-  shuffleArray(testSuites);
+  // shuffleArray(testSuites);
 
   return {
     testType,

@@ -50,20 +50,20 @@ WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
 });
 
 
-// // const matrix1 = [1,1,1,2,2,2,3,3,3];
-// // const matrix2 = [1,1,1,2,2,2,3,3,3]; /// wynik [6,  6,  6, 12, 12, 12, 18, 18, 18]
-// const matrix1 = generateSortFeed(matrixSize*matrixSize, false, 100);
-// const matrix2 = generateSortFeed(matrixSize*matrixSize, false, 100);
-// const results = Array.from({length: matrixSize * matrixSize}, e => 0);
-//
-// const t1 = performance.now();
-// matrixMul(matrixSize, matrix1, matrix2, results);
-// const t2 = performance.now();
-// console.log(t2-t1);
-// // console.log(process.memoryUsage());
-// console.log(process.memoryUsage().rss / 1048576 );
-// console.log(process.memoryUsage().external / 1048576 );
-// console.log(process.memoryUsage().heapTotal / 1048576 );
-// console.log(process.memoryUsage().heapUsed / 1048576 );
-// // console.log(results);
+// const matrix1 = [1,1,1,2,2,2,3,3,3];
+// const matrix2 = [1,1,1,2,2,2,3,3,3]; /// wynik [6,  6,  6, 12, 12, 12, 18, 18, 18]
+const matrix1 = generateSortFeed(matrixSize*matrixSize, false, 100);
+const matrix2 = generateSortFeed(matrixSize*matrixSize, false, 100);
+const results = Array.from({length: matrixSize * matrixSize}, e => 0);
+
+const t1 = performance.now();
+matrixMul(matrixSize, matrix1, matrix2, results);
+const t2 = performance.now();
+console.log(t2-t1);
+// console.log(process.memoryUsage());
+console.log(process.memoryUsage().rss / 1048576 );
+console.log(process.memoryUsage().external / 1048576 );
+console.log(process.memoryUsage().heapTotal / 1048576 );
+console.log(process.memoryUsage().heapUsed / 1048576 );
+// console.log(results);
 
