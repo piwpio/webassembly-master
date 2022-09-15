@@ -32,6 +32,7 @@ export interface TestResults {
 export interface SocketMessageTestData {
   testType: SocketMessageTestType;
   repeatTimes: number;
+  approach: 'single' | 'thread' | 'cluster';
   clientData: any;
   custom?: {
     [key: string]: any;

@@ -8,6 +8,7 @@ const init = () => {
 }
 
 function sendResults(results) {
+  console.log('CLUSTER PROCESS RESULTS');
   process.send({
     event: 'results',
     data: results

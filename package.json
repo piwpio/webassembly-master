@@ -7,6 +7,7 @@
     "server-test": "node  --stack-size=8192 ./server/index-test.js",
     "server-test:extended": "node --max-old-space-size=8192 --stack-size=8192 ./server/index-test.js",
     "server-test:wasi": "node --experimental-wasi-unstable-preview1 ./server/index-test.js",
+    "start-server": "node  --stack-size=8192 ./server/index.js",
     "start-server:single": "node  --stack-size=8192 ./server/index.js single",
     "start-server:cluster": "node  --stack-size=8192 ./server/index.js cluster",
     "start-server:thread": "node  --stack-size=8192 ./server/index.js thread",

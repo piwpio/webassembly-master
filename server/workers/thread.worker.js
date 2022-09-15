@@ -10,7 +10,7 @@ parentPort.on("message", msg => {
 parentPort.postMessage({ event: 'ready' });
 
 function sendResults(results) {
-  console.log('WORKER THREAD SEND RESULTS');
+  console.log('WORKER THREAD RESULTS');
   parentPort.postMessage({
     event: 'results',
     data: results

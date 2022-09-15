@@ -3,6 +3,10 @@ const http = require('http');
 const path = require('path');
 const {shuffleArray} = require('../utils');
 
+const TEST_MODULE_CLUSTER = require('../modules/cluster-test.module');
+const TEST_MODULE_THREAD = require('../modules/thread-test.module');
+const TEST_MODULE_SINGLE = require('../modules/single-test.module');
+
 let MAIN_SOCKET = null;
 let TEST_MODULE = null;
 
@@ -33,6 +37,9 @@ const startServer = (testModule) => {
   sio.sockets.on('connection', socket =>  {
     MAIN_SOCKET = socket;
     TEST_MODULE.setSocket(MAIN_SOCKET);
+    TEST_MODULE_CLUSTER.setSocket(MAIN_SOCKET);
+    TEST_MODULE_THREAD.setSocket(MAIN_SOCKET);
+    TEST_MODULE_SINGLE.setSocket(MAIN_SOCKET);
     socketOnStatus();
     socket.on('msg', msg => {
       if (msg.event === 'status') {
@@ -51,7 +58,7 @@ const startServer = (testModule) => {
 function socketOnStatus(testType) {
   const socketMsg = {
     event: 'status',
-    data: getStatus()
+    data: getStatus(),
   }
   if (testType) {
     socketMsg.data['testType'] = testType;
@@ -61,6 +68,17 @@ function socketOnStatus(testType) {
 
 function socketOnNewTest(data) {
   const {testType, testSuites, testData, repeatTimes} = getTestSuites(data);
+
+  if (data?.approach) {
+    if (data.approach === 'cluster') {
+      TEST_MODULE = TEST_MODULE_CLUSTER;
+    } else if (data.approach === 'thread') {
+      TEST_MODULE = TEST_MODULE_THREAD;
+    } else if (data.approach === 'single') {
+      TEST_MODULE = TEST_MODULE_SINGLE;
+    }
+  }
+
   TEST_MODULE.run(testType, testSuites, testData, repeatTimes);
 }
 

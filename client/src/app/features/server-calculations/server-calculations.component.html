@@ -2,7 +2,7 @@
   <div>
     <ng-container *ngIf="testType === 'matrix-det' || testType === 'matrix-mul' || testType === 'cholesky'">
       <mat-form-field appearance="outline">
-        <mat-label>N matrix</mat-label>
+        <mat-label>Matrix size N</mat-label>
         <input
           matInput
           type="number"
@@ -50,6 +50,14 @@
         [disabled]="!isReadyForNextTest"
         [(ngModel)]="testData.repeatTimes"
       />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Server calculation approach</mat-label>
+      <mat-select [disabled]="!isReadyForNextTest" [value]="true" [(ngModel)]="testData.approach">
+        <mat-option [value]="'single'">Single</mat-option>
+        <mat-option [value]="'thread'">Threads</mat-option>
+        <mat-option [value]="'cluster'">Cluster</mat-option>
+      </mat-select>
     </mat-form-field>
     <button mat-flat-button color="primary" type="submit" [disabled]="!isReadyForNextTest" (click)="runTest()">
       Run benchmark

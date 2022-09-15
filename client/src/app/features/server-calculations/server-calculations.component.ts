@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { SocketMessageTestData } from '@models/server-data.model';
+import { SocketMessageTestData, SocketMessageTestType } from '@models/server-data.model';
 import { SocketService } from '@services/socket.service';
 import { ServerReadyService } from '@services/server-ready.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,10 +14,13 @@ import { take, takeUntil } from 'rxjs/operators';
 })
 export class ServerCalculationsComponent extends BaseServerTestComponent {
   testData: SocketMessageTestData = {
+    approach: 'cluster',
     testType: this.testType,
     repeatTimes: 1,
     clientData: 10,
   };
+
+  private lastValues = {};
 
   constructor(
     protected socketService: SocketService,
@@ -29,18 +32,20 @@ export class ServerCalculationsComponent extends BaseServerTestComponent {
     super(socketService, serverReadyService, chRef);
 
     this.route.params.pipe(take(1)).subscribe((params) => {
-      console.log(params.test);
       this.testType = params.test;
       this.testData.testType = params.test;
+      this.testData.clientData = this.lastValues?.[params.test] ?? this.getDefaultValueForTest(params.test);
     });
 
     this.route.params.pipe(takeUntil(this.$destroy)).subscribe((params) => {
       this.testType = params.test;
       this.testData.testType = params.test;
+      this.testData.clientData = this.lastValues?.[params.test] ?? this.getDefaultValueForTest(params.test);
     });
   }
 
   getTestData(): SocketMessageTestData {
+    this.lastValues[this.testType] = this.testData.clientData;
     if (!this.areInputsValid()) {
       this.matSnackBar.open('Invalid inputs');
       return null;
@@ -73,5 +78,15 @@ export class ServerCalculationsComponent extends BaseServerTestComponent {
     }
 
     return false;
+  }
+
+  private getDefaultValueForTest(param: SocketMessageTestType): number {
+    if (param === 'matrix-det' || param === 'matrix-mul' || param === 'cholesky') {
+      return 1000;
+    } else if (param === 'quicksort') {
+      return 100_000;
+    } else if (param === 'fibonacci') {
+      return 30;
+    }
   }
 }

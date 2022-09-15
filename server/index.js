@@ -3,15 +3,8 @@ const cluster = require('cluster');
 if (cluster.isPrimary) {
   const mainWorker = require('./workers/main.worker.js');
 
-  const approach = process.argv[2];
-  let testModule;
-  if (approach === 'cluster') {
-    testModule = require('./modules/cluster-test.module');
-  } else if (approach === 'thread') {
-    testModule = require('./modules/thread-test.module');
-  } else if (approach === 'single') {
-    testModule = require('./modules/single-test.module');
-  }
+  // const approach = process.argv[2];
+  const testModule = require('./modules/cluster-test.module');
 
   mainWorker.startServer(testModule);
 } else {
