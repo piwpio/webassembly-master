@@ -1,22 +1,9 @@
-const path = require('path');
-const file = path.join(__dirname, 'wasm', 'fibonacciO3.wasm');
-const filesystem = require('fs');
-const wasmBuffer = filesystem.readFileSync(file);
+function fibonacci(n) {
+  if (n <= 1) {
+    return n;
+  }
 
-const memory = new WebAssembly.Memory({
-  initial: 1,
-  maximum: 256
-});
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
 
-const imports = {
-  env: {
-    emscripten_random: Math.random,
-    memory: memory
-  },
-};
-
-WebAssembly.instantiate(wasmBuffer, imports).then(wasmModule => {
-  const fibonacci = wasmModule.instance.exports.fibonacci;
-  const n = 10;
-  console.log(`Wynik fibonacci n = ${n} to ${fibonacci(n)}\n`);
-});
+exports.fibonacci = fibonacci;

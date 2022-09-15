@@ -41,49 +41,4 @@ function gaussElimination(n, matrix) {
   return det;
 }
 
-function gaussElimination2(matrix) {
-  const n = matrix.length;
-  let det = 1;
-  for (let k = 0; k < n - 1; k++) {
-    for (let i = k; i < n - 1;) {
-      // if diagonal number equals 0 swap it with other row
-      if (matrix[k][k] === 0) {
-        let swapIndex;
-        for (let l = i+1; l < n; l++) {
-          if (matrix[l][k] !== 0) {
-            swapIndex = l;
-            break;
-          }
-        }
-
-        // check if there is row without 0. If not this column is already done;
-        if (swapIndex === undefined) {
-          i++;
-          continue;
-        }
-
-        // swap rows
-        for (let q = 0; q < n; q++) {
-          const tmp = matrix[k][q];
-          matrix[k][q] = matrix[swapIndex][q];
-          matrix[swapIndex][q] = tmp;
-        }
-        continue;
-      }
-
-      const c = matrix[i+1][k] / matrix[k][k];
-      for (let j = 0; j < n; j++) {
-        matrix[i+1][j] -= c * matrix[k][j];
-      }
-      i++;
-    }
-  }
-  for (let i = 0; i < n; i++) {
-    det *= matrix[i][i];
-  }
-
-  return det
-}
-
 exports.gaussElimination = gaussElimination;
-exports.gaussElimination2 = gaussElimination2;

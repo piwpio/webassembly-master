@@ -6,7 +6,7 @@ const wasmBuffer = fs.readFileSync(file);
 const {performance} = require('perf_hooks');
 const {quicksort} = require('./scripts/quicksort');
 
-const size = 10_00_000;
+const size = 10;
 
 WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
   const test = wasmModule.instance.exports['quicksort'];

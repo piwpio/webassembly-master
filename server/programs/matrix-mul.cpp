@@ -13,7 +13,6 @@ void matrixMul(int n, double *matrix1, double *matrix2, double *matrixRes)
             }
         }
     }
-
 }
 
 
