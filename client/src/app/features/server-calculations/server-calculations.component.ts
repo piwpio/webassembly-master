@@ -64,7 +64,7 @@ export class ServerCalculationsComponent extends BaseServerTestComponent {
       return (
         typeof this.testData.clientData === 'number' &&
         this.testData.clientData >= 1 &&
-        this.testData.clientData <= 3_000_000
+        this.testData.clientData <= 10_000_000
       );
     } else if (this.testType === 'fibonacci') {
       return (

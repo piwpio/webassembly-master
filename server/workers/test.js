@@ -88,6 +88,20 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
         test(testData, matrix.byteOffset, lower.byteOffset);
         m1 = process.memoryUsage();
 
+      } else if (testType === 'quicksort') {
+        const data = generateSortFeed(testData, false, 100);
+
+        const pagesToAllocate = getPagesToGrow(memory, Float64Array, testData * 2);
+        if (pagesToAllocate > 0) {
+          memory.grow(pagesToAllocate);
+        }
+
+        const array = new Float64Array(memory.buffer, 0, data.length);
+        array.set(data);
+
+        test(array.byteOffset, 0, testData-1);
+        m1 = process.memoryUsage();
+
       } else if (testType === 'fibonacci') {
         const a = test(testData);
         m1 = process.memoryUsage();
@@ -136,6 +150,12 @@ function runJs(testType, testSuite, testData, testRepeatTimes) {
       const lower = Array.from({length:  Math.pow(testData, 2)}, e => 0);
       test(testData, matrix, lower);
       m1 = process.memoryUsage();
+
+    } else if (testType === 'quicksort') {
+      const array = generateSortFeed(testData, false, 100);
+      test(array, 0, testData-1);
+      m1 = process.memoryUsage();
+
     } else if (testType === 'fibonacci') {
       const a = test(testData);
       m1 = process.memoryUsage();
