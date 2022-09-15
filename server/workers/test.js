@@ -88,6 +88,9 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
         test(testData, matrix.byteOffset, lower.byteOffset);
         m1 = process.memoryUsage();
 
+      } else if (testType === 'fibonacci') {
+        const a = test(testData);
+        m1 = process.memoryUsage();
       }
 
       const pe = performance.now();
@@ -132,6 +135,9 @@ function runJs(testType, testSuite, testData, testRepeatTimes) {
       const matrix = generateArrayForCholesky(testData, 0, 100);
       const lower = Array.from({length:  Math.pow(testData, 2)}, e => 0);
       test(testData, matrix, lower);
+      m1 = process.memoryUsage();
+    } else if (testType === 'fibonacci') {
+      const a = test(testData);
       m1 = process.memoryUsage();
     }
 

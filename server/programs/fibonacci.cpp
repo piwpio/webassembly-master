@@ -3,12 +3,12 @@
 extern "C" {
 
 EMSCRIPTEN_KEEPALIVE
-unsigned long long int fibonacciRecursive(int n) {
+unsigned long long int fibonacci(int n) {
     if (n <= 1) {
         return n;
     }
     
-    return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
+    return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 // EMSCRIPTEN_KEEPALIVE
