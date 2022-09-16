@@ -26,8 +26,8 @@ function run(testType, testSuites, testData, testRepeatTimes) {
   RESULTS = {};
   TEST_LENGTH = testSuites.length;
 
-  for (let i = 0; i < min(numCPUs, TEST_LENGTH); i++) {
-  // for (let i = 0; i < min(1, TEST_LENGTH); i++) {
+  // for (let i = 0; i < min(numCPUs, TEST_LENGTH); i++) {
+  for (let i = 0; i < min(1, TEST_LENGTH); i++) {
     addNewWorker();
   }
 }

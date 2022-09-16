@@ -98,6 +98,7 @@ export abstract class BaseServerTestComponent implements OnInit, OnDestroy {
   runTest(): void {
     const testData = this.getTestData();
     if (testData) {
+      this.serverResults = '';
       this.tableDisplayedColumns = null;
       this.tableDisplayedColumnsWithTestNo = null;
       this.tablePreparedResults = null;

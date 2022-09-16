@@ -17,7 +17,7 @@ export class ServerCalculationsComponent extends BaseServerTestComponent impleme
   testData: SocketMessageTestData = {
     approach: 'cluster',
     testType: this.testType,
-    repeatTimes: 1,
+    repeatTimes: 5,
     clientData: 10,
   };
 
@@ -91,9 +91,9 @@ export class ServerCalculationsComponent extends BaseServerTestComponent impleme
 
   private getDefaultValueForTest(param: SocketMessageTestType): number {
     if (param === 'matrix-det' || param === 'matrix-mul' || param === 'cholesky') {
-      return 1024;
+      return 500;
     } else if (param === 'quicksort') {
-      return 100_000;
+      return 300_000;
     } else if (param === 'fibonacci') {
       return 30;
     }
