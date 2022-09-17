@@ -83,5 +83,16 @@ body {
         height: 320px;
       }
     }
+    //@media only screen and (min-width: 1460px) {
+    //  .chart__container {
+    //    &--card,
+    //    &--bar {
+    //      width: 50%;
+    //    }
+    //    &--card {
+    //      float: right;
+    //    }
+    //  }
+    //}
   }
 }
