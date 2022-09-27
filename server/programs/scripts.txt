@@ -28,6 +28,10 @@ em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/fibonacci.cpp -
 em++ -O2 ~/Dropbox/Magisterka/webassembly-master/server/programs/fibonacci.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/fibonacciO2.wasm --no-entry
 em++ -O1 ~/Dropbox/Magisterka/webassembly-master/server/programs/fibonacci.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/fibonacciO1.wasm --no-entry
 
+ELEMENTAL
+em++ -O3 ~/Dropbox/Magisterka/webassembly-master/server/programs/elemental.cpp -o ~/Dropbox/Magisterka/webassembly-master/server/wasm/elementalO3.wasm --no-entry
+
+
 
 -s TOTAL_STACK = 8589934592
 -s TOTAL_MEMORY=256mb
