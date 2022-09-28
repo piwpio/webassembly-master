@@ -2,10 +2,14 @@ const {performance} = require('perf_hooks');
 const {generateSortFeed, getPagesToGrow} = require('../utils');
 const {generateArrayForCholesky} = require('../scripts/cholesky');
 
+let mm;
+
 exports.test = function(msg) {
   if (msg.event !== 'runTest') {
     return new Promise(resolve => {resolve(null)});
   }
+
+  mm = process.memoryUsage();
 
   const data = msg.data;
   if (data.testSuite.isWasm) {
@@ -81,6 +85,12 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
       } else if (testType === 'cholesky') {
         const data1 = generateArrayForCholesky(testData, 0, 100);
         const data2 = Array.from({length:  Math.pow(testData, 2)}, e => 0);
+
+        const pagesToAllocate = getPagesToGrow(memory, Float64Array, Math.pow(testData, 2) * 2);
+        if (pagesToAllocate > 0) {
+          memory.grow(pagesToAllocate);
+        }
+
         const matrix = new Float64Array(memory.buffer, 0, data1.length);
         const lower = new Float64Array(memory.buffer, Float64Array.BYTES_PER_ELEMENT * Math.pow(testData, 2), data2.length);
         matrix.set(data1);
@@ -111,7 +121,7 @@ function runWasm(testType, testSuite, testData, testRepeatTimes) {
       const p = pe - ps;
 
       resolve({
-        memory: [m1, m2],
+        memory: [m1, mm],
         performance: p,
         testIndex: testSuite.testIndex,
         testLabel: testSuite.testLabel
