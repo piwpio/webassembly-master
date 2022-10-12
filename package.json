@@ -1,6 +1,7 @@
 {
   "name": "webassembly-master",
-  "version": "0.0.1",
+  "author": "Piotr Piwowar-Skret",
+  "version": "1.0.0",
   "scripts": {
     "prepare": "husky install",
     "start": "ng serve --live-reload=false --configuration test",
